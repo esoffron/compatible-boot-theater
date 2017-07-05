@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<!-- APPLE BOOT THEATER, by Charles Mangin                        -->
+<!-- Requires Javascript. Utilizes the 4am boot video collection  -->
+<!-- to provide an endless grid of booting Apple II programs      -->
+<!-- for whatever reason you might need that.                     -->
+
+<!-- Small patch by @soffronoff to use MPEG4 video when OGG not available -->
+
+<html>
+     <head>
+     <meta charset="UTF-8">
+	<title>Apple Boot Theater, by Charles Mangin</title>
+			
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>		
+		
+<script type='text/javascript'>
+	//<![CDATA[
+
+function padDigits(number, digits) {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+}
+
+window.onload=function(){
+	
+var videos = [];
+
+var gridVideos = document.getElementsByTagName("video");
+
+var vid = document.createElement('video');
+    oggSupp = vid.canPlayType('video/ogg');
+    console.log ('oggSupp: ' + oggSupp);
+    if(oggSupp == 'maybe') {
+    		desiredFormat = "Ogg Video";
+    		console.log('Want Ogg');
+    } else {
+    		desiredFormat = "MPEG4";
+    		console.log('Fall back to MPEG4');
+    };
+    console.log('desired format: ' + desiredFormat);
+    
+	
+$.getJSON( "https://archive.org/advancedsearch.php?q=collection%3A%284amp4%29+AND+mediatype%3A%28movies%29&fl%5B%5D=identifier&sort%5B%5D=addeddate+desc&sort%5B%5D=&sort%5B%5D=&rows=500&page=1&output=json&callback=?&save=yes", function( data ) {
+    console.log('loaded');
+    var identifiers = []; // create array here
+    $.each(data.response.docs, function (index, doc) {
+        identifiers.push(doc.identifier); //push values here
+	
+	 	var identifierURL = "https://archive.org/metadata/" + doc.identifier + "&callback=?";
+		
+		//console.log(identifierURL);
+		
+		$.getJSON( identifierURL, function( item ) {
+		 // var items = [];
+		 
+		// console.log(item.dir);
+		 
+		  $.each( item.files, function( key, val ) {
+			  
+			  if(val.format == desiredFormat) {
+				  var MP4URL= "https://archive.org" + item.dir +"/"+ val.name;
+				//  console.log(MP4URL);
+				  videos.push( MP4URL );  
+				  
+				  $('#progress').css("width",identifiers.length);
+				  $('#bar').css("width",videos.length);
+				  
+				  if(videos.length == identifiers.length - 1) {
+					  
+					  	$('#progress').hide();
+					  
+					  	for(var i=0;i<gridVideos.length;i++){
+						 	playArray(i,gridVideos[i],videos,null);
+						}
+	
+				  }
+
+			  }
+			  
+		  });
+		  
+	    });
+
+	});
+
+});	
+	
+	
+/*	for(i=0;i<516;i++){
+		
+		videos[i] = padDigits(i,4) + ".mp4";
+		
+	}
+*/
+	
+	function playArray(index,ele,array,listener){
+	   
+	   	index=Math.floor(Math.random()*array.length);
+	   
+	    ele.src = array[index];
+	    ele.load();
+	    //ele.play();
+	    index++;
+	    if(index>=array.length){
+	        index=0;
+	    }
+	    listener = ele.addEventListener('ended',function(){
+	        playArray(index,ele,array,listener);
+	    },false);
+	    
+	    console.log("Playing " + videos[index]);
+	}
+		
+
+}
+//]]> 
+
+</script>
+
+<style>
+
+	video {
+		width: 25%;
+		height: 30%;
+		padding: 0;
+		margin: 0;
+		float:left;
+	}
+	body {
+		padding: 0;
+		margin: 0;
+		background: #000;
+	}
+	
+</style>  
+</head>
+
+<body>
+	<div id="container" style="width:100%">
+		
+		<div id="progress" style="border:1px solid #fff;height:10px; padding: 1px; margin: 10% auto; width: 0px;">
+			<div id="bar" style="height:8px; float: left; background-color: #fff;"></div>
+		</div>
+		
+	<div id="grid" style="margin:auto; width:90%;">
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>
+	  <video id="GridVideo" autoplay="true"></video>	
+	</div>	
+	</div>
+</body>
+</html>
