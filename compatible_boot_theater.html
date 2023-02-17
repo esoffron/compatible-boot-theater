@@ -43,7 +43,7 @@ var vid = document.createElement('video');
     console.log('desired format: ' + desiredFormat);
     
 	
-$.getJSON( "https://archive.org/advancedsearch.php?q=collection%3A%284amp4%29+AND+mediatype%3A%28movies%29&fl%5B%5D=identifier&sort%5B%5D=addeddate+desc&sort%5B%5D=&sort%5B%5D=&rows=500&page=1&output=json&callback=?&save=yes", function( data ) {
+$.getJSON( "https://archive.org/advancedsearch.php?q=A2Video+AND+mediatype%3A%28movies%29&fl%5B%5D=identifier&sort%5B%5D=addeddate+desc&sort%5B%5D=&sort%5B%5D=&rows=5000&page=1&output=json&callback=?&save=yes", function( data ) {
     console.log('loaded');
     var identifiers = []; // create array here
     $.each(data.response.docs, function (index, doc) {
