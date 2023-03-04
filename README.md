@@ -9,8 +9,6 @@ Tested with Mac Safari 10.1.2, Mac Firefox 54.0, Mac Chrome 59.0.3071.115, and E
 
 Original at http://textfiles.com/appleboot/
 
-Playing movies from https://archive.org/details/4amp4?sort=-publicdate
-
 Follow 4AM at @a2_4am@mastodon.social
 
 Charles Mangin's RetroConnector site (http://retroconnector.com)
