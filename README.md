@@ -1,7 +1,9 @@
 # compatible-boot-theater
 Small patch to Charles Mangin's awesome web page that displays 4AM's Apple II crack movies.
 
-### NEW for Marchintosh 2023: Now also has a version with 4AM's Mac boot videos!
+![MARCHintoshLogo](https://user-images.githubusercontent.com/4109731/222930338-a6d13385-3580-4691-9ebe-0e84430cdfdf.png)
+
+### NEW for Marchintosh 2023: Now also has a version with 4AM's Mac boot videos! #MARCHintosh
 
 Charles' orgiginal was hard-coded to use the smaller Ogg video files. Ogg video doesn't work in Safari or in the Mac WebViewScreenSaver (https://github.com/liquidx/webviewscreensaver).  This version tries to use Ogg, but if it detects Ogg won't work it will use MPEG4.
 
