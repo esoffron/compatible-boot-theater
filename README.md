@@ -17,4 +17,4 @@ Charles Mangin's RetroConnector site (http://retroconnector.com)
 
 https://user-images.githubusercontent.com/4109731/219543457-17785b4e-742e-403f-8fef-9109366de9c0.mp4
 
-https://github.com/esoffron/compatible-boot-theater/blob/master/boot-vid-mac.mp4
+https://user-images.githubusercontent.com/4109731/222925444-9a55c5bc-acab-4b41-bdfd-fec7aafefd88.mp4
