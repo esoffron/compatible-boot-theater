@@ -12,6 +12,7 @@ Tested with Mac Safari 10.1.2, Mac Firefox 54.0, Mac Chrome 59.0.3071.115, and E
 Original at http://textfiles.com/appleboot/
 
 Follow 4AM at @a2_4am@mastodon.social
+
 Follow Charles Mangin at @Option8@oldbytes.space
 
 Charles Mangin's RetroConnector site (http://retroconnector.com)
