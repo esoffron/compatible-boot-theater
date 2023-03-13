@@ -15,6 +15,8 @@ https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac9
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater_mac.html
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater_mac_silent.html
 ```
+Make sure you enter URLs exactly, with no leading or trailing spaces.  The Screen Saver isn't tolerant of whitespace!
+### Credits
 Original at http://textfiles.com/appleboot/
 
 Follow 4AM at @a2_4am@mastodon.social
