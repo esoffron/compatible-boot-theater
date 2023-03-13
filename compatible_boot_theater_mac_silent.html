@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- APPLE BOOT THEATER, by Charles Mangin                        -->
 <!-- Requires Javascript. Utilizes the 4am boot video collection  -->
@@ -37,7 +39,7 @@ var gridVideos = document.getElementsByTagName("video");
 var vid = document.createElement('video');
     oggSupp = vid.canPlayType('video/ogg');
     console.log ('oggSupp: ' + oggSupp);
-    if(oggSupp == 'maybe') {
+    if(oggSupp == 'maybe not') {
     		desiredFormat = "Ogg Video";
     		console.log('Want Ogg');
     } else {
