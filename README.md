@@ -7,7 +7,8 @@ Small patch to Charles Mangin's awesome web page that displays 4AM's Apple II cr
 
 Charles' orgiginal was hard-coded to use the smaller Ogg video files. Ogg video doesn't work in Safari or in the Mac WebViewScreenSaver (https://github.com/liquidx/webviewscreensaver).  This version will use MPEG4.
 
-## Note: Browsers have changed, and thankfully autoplaying videos with sound (which this relies upon) are generally no longer supported.  If you want to use a non-Safari browser, use the silent versions of the HTML.
+## Note One: Browsers have changed, and thankfully autoplaying videos with sound (which this relies upon) are generally no longer supported.  If you want to use a non-Safari browser, use the silent versions of the HTML.
+## Note Two: Due to sandboxing, loading the HTML in the screensaver using a local file:// URL will likely not work.  If you put the HTML on any old static web server you'll have better luck.
 
 Original at http://textfiles.com/appleboot/
 
