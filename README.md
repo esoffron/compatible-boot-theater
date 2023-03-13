@@ -5,9 +5,9 @@ Small patch to Charles Mangin's awesome web page that displays 4AM's Apple II cr
 
 ### NEW for Marchintosh 2023: Now also has a version with 4AM's Mac boot videos! #MARCHintosh
 
-Charles' orgiginal was hard-coded to use the smaller Ogg video files. Ogg video doesn't work in Safari or in the Mac WebViewScreenSaver (https://github.com/liquidx/webviewscreensaver).  This version will use MPEG4 in Safari and WebViewScreenSaver, but probably won't work in Chrome / Edge / Firefox.
+Charles' orgiginal was hard-coded to use the smaller Ogg video files. Ogg video doesn't work in Safari or in the Mac WebViewScreenSaver (https://github.com/liquidx/webviewscreensaver).  This version will use MPEG4.
 
-Tested with Mac Safari 10.1.2, Mac Firefox 54.0, Mac Chrome 59.0.3071.115, and Edge on Windows 10 (but seems to break on newer browser versions other than Safari).
+## Note: Browsers have changed, and thankfully autoplaying videos with sound (which this relies upon) are generally no longer supported.  If you want to use a non-Safari browser, use the silent versions of the HTML.
 
 Original at http://textfiles.com/appleboot/
 
