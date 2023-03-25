@@ -11,8 +11,14 @@ Charles' orgiginal was hard-coded to use the smaller Ogg video files. Ogg video 
 ## Note Two: Due to sandboxing, loading the HTML in the screensaver using a local file:// URL will likely not work.  If you put the HTML on any old static web server you'll have better luck.  You can try these links straight to the HTML files in this repository if you don't want to host them yourself:
 ```
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater.html
+```
+```
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater_silent.html
+```
+```
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater_mac.html
+```
+```
 https://rawcdn.githack.com/esoffron/compatible-boot-theater/d462a953fbf2a856dac97cb10047f7ddc8dc91bf/compatible_boot_theater_mac_silent.html
 ```
 Make sure you enter URLs exactly, with no leading or trailing spaces.  The Screen Saver isn't tolerant of whitespace!
