@@ -1,120 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- APPLE BOOT THEATER, by Charles Mangin                        -->
-<!-- Requires Javascript. Utilizes the 4am boot video collection  -->
-<!-- to provide an endless grid of booting Apple II programs      -->
-<!-- for whatever reason you might need that.                     -->
+<!-- APPLE BOOT THEATER, by Charles Mangin                          -->
+<!-- Requires Javascript. Utilizes the 4am boot video collection    -->
+<!-- to provide an endless grid of booting Apple II programs        -->
+<!-- for whatever reason you might need that.                       -->
 
-<!-- Small patch by @soffronoff@mastodon.social to use MPEG4 video when OGG not available -->
+<!-- Updated by @soffronoff@mastodon.social to work with Safari     -->
+<!-- and to get around some changes in the API at Internet Archive  -->
+<!-- and make launch faster and to make sure the same video doesn't -->
+<!-- display on the screen at the same time.                        -->
+
+<!-- It's less dynamic but also a lot less fiddly.  Years on and    -->
+<!-- Safari still doesn't do native OGG...                          -->
+
+
+<!-- Fast version with hardcoded URLs - no runtime lookups          -->
 
 <html>
      <head>
      <meta charset="UTF-8">
 	<title>Apple Boot Theater, by Charles Mangin</title>
 			
+<!-- jquery not needed for hardcoded versions
 <script 
 	src="https://code.jquery.com/jquery-3.6.4.min.js" 
 	integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" 
 	crossorigin="anonymous"></script>	
+ -->
 		
 <script type='text/javascript'>
 	//<![CDATA[
 
-function padDigits(number, digits) {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
-}
-
 window.onload=function(){
-	
-var videos = [];
 
 var gridVideos = document.getElementsByTagName("video");
 
-var vid = document.createElement('video');
-    oggSupp = vid.canPlayType('video/ogg');
-    console.log ('oggSupp: ' + oggSupp);
-    if(oggSupp == 'maybe not') {
-    		desiredFormat = "Ogg Video";
-    		console.log('Want Ogg');
-    } else {
-    		desiredFormat = "MPEG4";
-    		console.log('Fall back to MPEG4');
-    };
-    console.log('desired format: ' + desiredFormat);
+// MP4 video URLs for universal compatibility
+var videoUrls = [
+    "https://archive.org/download/A2Video_Fighter_Command/Fighter%20Command.mp4",
+    "https://archive.org/download/A2Video_Flip_Out/Flip%20Out.mp4",
+    "https://archive.org/download/A2Video_Force_7/Force%207.mp4",
+    "https://archive.org/download/A2Video_Galaxy_Gates/Galaxy%20Gates.mp4",
+    "https://archive.org/download/A2Video_Gladiator/Gladiator.mp4",
+    "https://archive.org/download/A2Video_Gorgon/Gorgon.mp4",
+    "https://archive.org/download/A2Video_Gremlins/Gremlins.mp4",
+    "https://archive.org/download/A2Video_Guardian/Guardian.mp4",
+    "https://archive.org/download/A2Video_Gumball/Gumball.mp4",
+    "https://archive.org/download/A2Video_H.E.R.O./H.E.R.O..mp4",
+    "https://archive.org/download/A2Video_Hard_Hat_Mack/Hard%20Hat%20Mack.mp4",
+    "https://archive.org/download/A2Video_Head_On/Head%20On.mp4",
+    "https://archive.org/download/A2Video_High_Orbit/High%20Orbit.mp4",
+    "https://archive.org/download/A2Video_Horizon_V/Horizon%20V.mp4",
+    "https://archive.org/download/A2Video_Hungry_Boy/Hungry%20Boy.mp4",
+    "https://archive.org/download/A2Video_Impossible_Mission/Impossible%20Mission.mp4",
+    "https://archive.org/download/A2Video_International_Gran_Prix/International%20Gran%20Prix.mp4",
+    "https://archive.org/download/A2Video_Jawbreaker/Jawbreaker.mp4",
+    "https://archive.org/download/A2Video_Jellyfish/Jellyfish.mp4",
+    "https://archive.org/download/A2Video_Joust/Joust.mp4",
+    "https://archive.org/download/A2Video_Juggler/Juggler.mp4",
+    "https://archive.org/download/A2Video_Jungle_Hunt/Jungle%20Hunt.mp4",
+    "https://archive.org/download/A2Video_Karate_Champ/Karate%20Champ.mp4",
+    "https://archive.org/download/A2Video_Karateka/Karateka.mp4",
+    "https://archive.org/download/A2Video_Labyrinth/Labyrinth.mp4",
+    "https://archive.org/download/A2Video_Lady_Tut/Lady%20Tut.mp4",
+    "https://archive.org/download/A2Video_Lancaster/Lancaster.mp4",
+    "https://archive.org/download/A2Video_Laser_Bounce/Laser%20Bounce.mp4",
+    "https://archive.org/download/A2Video_Lock_n%27_Chase/Lock%20%27n%27%20Chase.mp4",
+    "https://archive.org/download/A2Video_Lode_Runner/Lode%20Runner.mp4",
+    "https://archive.org/download/A2Video_Lost_Tomb/Lost%20Tomb.mp4",
+    "https://archive.org/download/A2Video_Mario_Bros./Mario%20Bros..mp4",
+    "https://archive.org/download/A2Video_Marauder/Marauder.mp4",
+    "https://archive.org/download/A2Video_Megabots/Megabots.mp4",
+    "https://archive.org/download/A2Video_Micro_Wave/Micro%20Wave.mp4",
+    "https://archive.org/download/A2Video_Midnight_Magic/Midnight%20Magic.mp4",
+    "https://archive.org/download/A2Video_Mine_Sweep/Mine%20Sweep.mp4",
+    "https://archive.org/download/A2Video_Miner_2049er/Miner%202049er.mp4",
+    "https://archive.org/download/A2Video_Minotaur/Minotaur.mp4",
+    "https://archive.org/download/A2Video_Mission_Asteroid/Mission%20Asteroid.mp4",
+    "https://archive.org/download/A2Video_Monster_Mash/Monster%20Mash.mp4",
+    "https://archive.org/download/A2Video_Moon_Patrol/Moon%20Patrol.mp4",
+    "https://archive.org/download/A2Video_Mr._Cool/Mr.%20Cool.mp4",
+    "https://archive.org/download/A2Video_Mr._Do!/Mr.%20Do%21.mp4",
+    "https://archive.org/download/A2Video_Ms._Pac-Man/Ms.%20Pac-Man.mp4",
+    "https://archive.org/download/A2Video_Neptune/Neptune.mp4",
+    "https://archive.org/download/A2Video_Night_Crawler/Night%20Crawler.mp4",
+    "https://archive.org/download/A2Video_Night_Mission_Pinball/Night%20Mission%20Pinball.mp4",
+    "https://archive.org/download/A2Video_Orbitron/Orbitron.mp4",
+    "https://archive.org/download/A2Video_Outpost/Outpost.mp4",
+    "https://archive.org/download/A2Video_Pac-Man/Pac-Man.mp4",
+    "https://archive.org/download/A2Video_Paperboy/Paperboy.mp4",
+    "https://archive.org/download/A2Video_Pegasus_II/Pegasus%20II.mp4",
+    "https://archive.org/download/A2Video_Penetrator/Penetrator.mp4",
+    "https://archive.org/download/A2Video_Pest_Patrol/Pest%20Patrol.mp4",
+    "https://archive.org/download/A2Video_Phantoms_Five/Phantoms%20Five.mp4",
+    "https://archive.org/download/A2Video_Phaser_Fire/Phaser%20Fire.mp4",
+    "https://archive.org/download/A2Video_Photar/Photar.mp4",
+    "https://archive.org/download/A2Video_Picnic_Paranoia/Picnic%20Paranoia.mp4",
+    "https://archive.org/download/A2Video_Pie-Man/Pie-Man.mp4",
+    "https://archive.org/download/A2Video_Pinball_Construction_Set/Pinball%20Construction%20Set.mp4",
+    "https://archive.org/download/A2Video_Pitstop_II/Pitstop%20II.mp4",
+    "https://archive.org/download/A2Video_Plasmania/Plasmania.mp4",
+    "https://archive.org/download/A2Video_Pooyan/Pooyan.mp4",
+    "https://archive.org/download/A2Video_Prince_of_Persia/Prince%20of%20Persia.mp4",
+    "https://archive.org/download/A2Video_Q-bert/Q-bert.mp4",
+    "https://archive.org/download/A2Video_Raster_Blaster/Raster%20Blaster.mp4",
+    "https://archive.org/download/A2Video_Repton/Repton.mp4",
+    "https://archive.org/download/A2Video_Rescue_Raiders/Rescue%20Raiders.mp4",
+    "https://archive.org/download/A2Video_Ribbit/Ribbit.mp4",
+    "https://archive.org/download/A2Video_Robotron_2084/Robotron%202084.mp4",
+    "https://archive.org/download/A2Video_Sabotage/Sabotage.mp4",
+    "https://archive.org/download/A2Video_Sammy_Lightfoot/Sammy%20Lightfoot.mp4",
+    "https://archive.org/download/A2Video_Seafox/Seafox.mp4",
+    "https://archive.org/download/A2Video_Serpentine/Serpentine.mp4",
+    "https://archive.org/download/A2Video_Shamus/Shamus.mp4",
+    "https://archive.org/download/A2Video_Short_Circuit/Short%20Circuit.mp4",
+    "https://archive.org/download/A2Video_Snack_Attack/Snack%20Attack.mp4",
+    "https://archive.org/download/A2Video_Snake_Byte/Snake%20Byte.mp4",
+    "https://archive.org/download/A2Video_Sneakers/Sneakers.mp4",
+    "https://archive.org/download/A2Video_Space_Raiders/Space%20Raiders.mp4",
+    "https://archive.org/download/A2Video_Spider_Raid/Spider%20Raid.mp4",
+    "https://archive.org/download/A2Video_Spy_Hunter/Spy%20Hunter.mp4",
+    "https://archive.org/download/A2Video_Star_Blazer/Star%20Blazer.mp4",
+    "https://archive.org/download/A2Video_Stellar_7/Stellar%207.mp4",
+    "https://archive.org/download/A2Video_Super_Zaxxon/Super%20Zaxxon.mp4",
+    "https://archive.org/download/A2Video_Swashbuckler/Swashbuckler.mp4",
+    "https://archive.org/download/A2Video_Tag_Team_Wrestling/Tag%20Team%20Wrestling.mp4",
+    "https://archive.org/download/A2Video_The_Bilestoad/The%20Bilestoad.mp4",
+    "https://archive.org/download/A2Video_The_Goonies/The%20Goonies.mp4",
+    "https://archive.org/download/A2Video_Thunder_Bombs/Thunder%20Bombs.mp4",
+    "https://archive.org/download/A2Video_Time_Zone/Time%20Zone.mp4",
+    "https://archive.org/download/A2Video_Track_Attack/Track%20Attack.mp4",
+    "https://archive.org/download/A2Video_Tubeway/Tubeway.mp4",
+    "https://archive.org/download/A2Video_Wavy_Navy/Wavy%20Navy.mp4",
+    "https://archive.org/download/A2Video_Wings_of_Fury/Wings%20of%20Fury.mp4",
+    "https://archive.org/download/A2Video_Zaxxon/Zaxxon.mp4",
+    // Additional videos MP4 versions
+    "https://archive.org/download/A2Video_Agent_USA/Agent%20USA.mp4",
+    "https://archive.org/download/A2Video_Airheart/Airheart.mp4",
+    "https://archive.org/download/A2Video_Alcazar/Alcazar.mp4",
+    "https://archive.org/download/A2Video_Alien_Rain/Alien%20Rain.mp4",
+    "https://archive.org/download/A2Video_Ankh/Ankh.mp4",
+    "https://archive.org/download/A2Video_Apple_Panic/Apple%20Panic.mp4",
+    "https://archive.org/download/A2Video_Aquatron/Aquatron.mp4",
+    "https://archive.org/download/A2Video_Archon/Archon.mp4",
+    "https://archive.org/download/A2Video_Archon_II/Archon%20II.mp4",
+    "https://archive.org/download/A2Video_Ardy_the_Aardvark/Ardy%20the%20Aardvark.mp4",
+    "https://archive.org/download/A2Video_Arena/Arena.mp4",
+    "https://archive.org/download/A2Video_Arkanoid/Arkanoid.mp4",
+    "https://archive.org/download/A2Video_Asteroid_Field/Asteroid%20Field.mp4",
+    "https://archive.org/download/A2Video_Aztec/Aztec.mp4",
+    "https://archive.org/download/A2Video_Bad_Dudes/Bad%20Dudes.mp4",
+    "https://archive.org/download/A2Video_Bandits/Bandits.mp4",
+    "https://archive.org/download/A2Video_Batman/Batman.mp4",
+    "https://archive.org/download/A2Video_Battle_Cruiser/Battle%20Cruiser.mp4",
+    "https://archive.org/download/A2Video_BC%27s_Quest_for_Tires/BC%27s%20Quest%20for%20Tires.mp4",
+    "https://archive.org/download/A2Video_Beach-Head/Beach-Head.mp4",
+    "https://archive.org/download/A2Video_Beach-Head_II/Beach-Head%20II.mp4",
+    "https://archive.org/download/A2Video_Beer_Run/Beer%20Run.mp4",
+    "https://archive.org/download/A2Video_Bellhop/Bellhop.mp4",
+    "https://archive.org/download/A2Video_Below_the_Root/Below%20the%20Root.mp4",
+    "https://archive.org/download/A2Video_Berzap!/Berzap%21.mp4",
+    "https://archive.org/download/A2Video_Beyond_Castle_Wolfenstein/Beyond%20Castle%20Wolfenstein.mp4",
+    "https://archive.org/download/A2Video_Black_Magic/Black%20Magic.mp4",
+    "https://archive.org/download/A2Video_Blister_Ball/Blister%20Ball.mp4",
+    "https://archive.org/download/A2Video_Boa/Boa.mp4",
+    "https://archive.org/download/A2Video_Bolo/Bolo.mp4",
+    "https://archive.org/download/A2Video_Bouncing_Kamungas/Bouncing%20Kamungas.mp4",
+    "https://archive.org/download/A2Video_Boulder_Dash/Boulder%20Dash.mp4",
+    "https://archive.org/download/A2Video_Boulder_Dash_II/Boulder%20Dash%20II.mp4",
+    "https://archive.org/download/A2Video_Breakout/Breakout.mp4",
+    "https://archive.org/download/A2Video_Bruce_Lee/Bruce%20Lee.mp4",
+    "https://archive.org/download/A2Video_Bubble_Bobble/Bubble%20Bobble.mp4",
+    "https://archive.org/download/A2Video_Buck_Rogers/Buck%20Rogers.mp4",
+    "https://archive.org/download/A2Video_Bug_Attack/Bug%20Attack.mp4",
+    "https://archive.org/download/A2Video_BurgerTime/BurgerTime.mp4",
+    "https://archive.org/download/A2Video_Buzzard_Bait/Buzzard%20Bait.mp4",
+    "https://archive.org/download/A2Video_Cannonball_Blitz/Cannonball%20Blitz.mp4",
+    "https://archive.org/download/A2Video_Canyon_Climber/Canyon%20Climber.mp4",
+    "https://archive.org/download/A2Video_Captain_Goodnight/Captain%20Goodnight.mp4",
+    "https://archive.org/download/A2Video_Castle_Wolfenstein/Castle%20Wolfenstein.mp4",
+    "https://archive.org/download/A2Video_Cavern_Creatures/Cavern%20Creatures.mp4",
+    "https://archive.org/download/A2Video_Ceiling_Zero/Ceiling%20Zero.mp4",
+    "https://archive.org/download/A2Video_Centipede/Centipede.mp4",
+    "https://archive.org/download/A2Video_Championship_Lode_Runner/Championship%20Lode%20Runner.mp4",
+    "https://archive.org/download/A2Video_Choplifter/Choplifter.mp4",
+    "https://archive.org/download/A2Video_Commando/Commando.mp4",
+    "https://archive.org/download/A2Video_Congo_Bongo/Congo%20Bongo.mp4",
+    "https://archive.org/download/A2Video_Contra/Contra.mp4",
+    "https://archive.org/download/A2Video_Conan/Conan.mp4",
+    "https://archive.org/download/A2Video_Cosmic_Combat/Cosmic%20Combat.mp4",
+    "https://archive.org/download/A2Video_County_Fair/County%20Fair.mp4",
+    "https://archive.org/download/A2Video_Crazy_Mazey/Crazy%20Mazey.mp4",
+    "https://archive.org/download/A2Video_Crime_Wave/Crime%20Wave.mp4",
+    "https://archive.org/download/A2Video_Crisis_Mountain/Crisis%20Mountain.mp4",
+    "https://archive.org/download/A2Video_Crossfire/Crossfire.mp4",
+    "https://archive.org/download/A2Video_Crystal_Castles/Crystal%20Castles.mp4",
+    "https://archive.org/download/A2Video_Cubit/Cubit.mp4",
+    "https://archive.org/download/A2Video_Cyclod/Cyclod.mp4",
+    "https://archive.org/download/A2Video_D-Generation/D-Generation.mp4",
+    "https://archive.org/download/A2Video_Dam_Busters/Dam%20Busters.mp4",
+    "https://archive.org/download/A2Video_Dangerous_Dave/Dangerous%20Dave.mp4",
+    "https://archive.org/download/A2Video_Daredevil/Daredevil.mp4",
+    "https://archive.org/download/A2Video_Dark_Crystal/Dark%20Crystal.mp4",
+    "https://archive.org/download/A2Video_David%27s_Midnight_Magic/David%27s%20Midnight%20Magic.mp4",
+    "https://archive.org/download/A2Video_Defender/Defender.mp4",
+    "https://archive.org/download/A2Video_Deliverance/Deliverance.mp4",
+    "https://archive.org/download/A2Video_Demon_Attack/Demon%20Attack.mp4",
+    "https://archive.org/download/A2Video_Demon%27s_Winter/Demon%27s%20Winter.mp4",
+    "https://archive.org/download/A2Video_Diamond_Mine/Diamond%20Mine.mp4",
+    "https://archive.org/download/A2Video_Dig_Dug/Dig%20Dug.mp4",
+    "https://archive.org/download/A2Video_Dino_Eggs/Dino%20Eggs.mp4",
+    "https://archive.org/download/A2Video_Donkey_Kong/Donkey%20Kong.mp4",
+    "https://archive.org/download/A2Video_Donkey_Kong_Jr./Donkey%20Kong%20Jr..mp4",
+    "https://archive.org/download/A2Video_Double_Trouble/Double%20Trouble.mp4",
+    "https://archive.org/download/A2Video_Dragonfire/Dragonfire.mp4",
+    "https://archive.org/download/A2Video_Drelbs/Drelbs.mp4",
+    "https://archive.org/download/A2Video_Drol/Drol.mp4",
+    "https://archive.org/download/A2Video_Dung_Beetles/Dung%20Beetles.mp4",
+    "https://archive.org/download/A2Video_Eagle%27s_Nest/Eagle%27s%20Nest.mp4",
+    "https://archive.org/download/A2Video_Eggs-It/Eggs-It.mp4",
+    "https://archive.org/download/A2Video_Eliminator/Eliminator.mp4",
+    "https://archive.org/download/A2Video_Elite/Elite.mp4",
+    "https://archive.org/download/A2Video_Epoch/Epoch.mp4",
+    "https://archive.org/download/A2Video_Evolution/Evolution.mp4",
+    "https://archive.org/download/A2Video_Falcons/Falcons.mp4",
+    "https://archive.org/download/A2Video_Fat_City/Fat%20City.mp4",
+    "https://archive.org/download/A2Video_Firebird/Firebird.mp4",
+    "https://archive.org/download/A2Video_Firebug/Firebug.mp4",
+    "https://archive.org/download/A2Video_Flight_Simulator_II/Flight%20Simulator%20II.mp4",
+    "https://archive.org/download/A2Video_Fly_Wars/Fly%20Wars.mp4",
+    "https://archive.org/download/A2Video_Formula_1_Racer/Formula%201%20Racer.mp4",
+    "https://archive.org/download/A2Video_Free_Fall/Free%20Fall.mp4",
+    "https://archive.org/download/A2Video_Frogger/Frogger.mp4",
+    "https://archive.org/download/A2Video_Frogger_II/Frogger%20II.mp4",
+    "https://archive.org/download/A2Video_Galaxian/Galaxian.mp4",
+    "https://archive.org/download/A2Video_Galaxy_Quest/Galaxy%20Quest.mp4",
+    "https://archive.org/download/A2Video_Gamma_Goblins/Gamma%20Goblins.mp4",
+    "https://archive.org/download/A2Video_Gauntlet/Gauntlet.mp4",
+    "https://archive.org/download/A2Video_Genetic_Drift/Genetic%20Drift.mp4",
+    "https://archive.org/download/A2Video_Genius/Genius.mp4",
+    "https://archive.org/download/A2Video_Genius_2/Genius%202.mp4",
+    "https://archive.org/download/A2Video_Ghostbusters/Ghostbusters.mp4",
+    "https://archive.org/download/A2Video_Gold_Rush/Gold%20Rush.mp4",
+    "https://archive.org/download/A2Video_Goonies/Goonies.mp4",
+    "https://archive.org/download/A2Video_Gruds_in_Space/Gruds%20in%20Space.mp4",
+    "https://archive.org/download/A2Video_Gulf_Strike/Gulf%20Strike.mp4",
+    "https://archive.org/download/A2Video_Gun_Fight/Gun%20Fight.mp4",
+    "https://archive.org/download/A2Video_Hadron/Hadron.mp4",
+    "https://archive.org/download/A2Video_Hardball/Hardball.mp4",
+    "https://archive.org/download/A2Video_Heavy_Barrel/Heavy%20Barrel.mp4",
+    "https://archive.org/download/A2Video_Hellfire_Warrior/Hellfire%20Warrior.mp4",
+    "https://archive.org/download/A2Video_High_Rise/High%20Rise.mp4",
+    "https://archive.org/download/A2Video_Hunt_for_Red_October/Hunt%20for%20Red%20October.mp4",
+    "https://archive.org/download/A2Video_Hydra/Hydra.mp4",
+    "https://archive.org/download/A2Video_I.O._Silver/I.O.%20Silver.mp4",
+    "https://archive.org/download/A2Video_Ikari_Warriors/Ikari%20Warriors.mp4",
+    "https://archive.org/download/A2Video_Indiana_Jones/Indiana%20Jones.mp4",
+    "https://archive.org/download/A2Video_Infiltrator/Infiltrator.mp4",
+    "https://archive.org/download/A2Video_Into_the_Eagle%27s_Nest/Into%20the%20Eagle%27s%20Nest.mp4",
+    "https://archive.org/download/A2Video_Jawbreaker_II/Jawbreaker%20II.mp4",
+    "https://archive.org/download/A2Video_Jet/Jet.mp4",
+    "https://archive.org/download/A2Video_Jumpman/Jumpman.mp4",
+    "https://archive.org/download/A2Video_Kabul_Spy/Kabul%20Spy.mp4",
+    "https://archive.org/download/A2Video_Kamikaze/Kamikaze.mp4",
+    "https://archive.org/download/A2Video_Kid_Niki/Kid%20Niki.mp4",
+    "https://archive.org/download/A2Video_King%27s_Quest/King%27s%20Quest.mp4",
+    "https://archive.org/download/A2Video_King%27s_Quest_II/King%27s%20Quest%20II.mp4",
+    "https://archive.org/download/A2Video_King%27s_Quest_III/King%27s%20Quest%20III.mp4",
+    "https://archive.org/download/A2Video_King%27s_Quest_IV/King%27s%20Quest%20IV.mp4",
+    "https://archive.org/download/A2Video_Kung_Fu_Master/Kung%20Fu%20Master.mp4",
+    "https://archive.org/download/A2Video_Lady_Bug/Lady%20Bug.mp4",
+    "https://archive.org/download/A2Video_Lamb_Chops!/Lamb%20Chops%21.mp4",
+    "https://archive.org/download/A2Video_Last_Gladiator/Last%20Gladiator.mp4",
+    "https://archive.org/download/A2Video_Last_Ninja/Last%20Ninja.mp4",
+    "https://archive.org/download/A2Video_Lazer_Maze/Lazer%20Maze.mp4",
+    "https://archive.org/download/A2Video_Leisure_Suit_Larry/Leisure%20Suit%20Larry.mp4",
+    "https://archive.org/download/A2Video_Lemmings/Lemmings.mp4",
+    "https://archive.org/download/A2Video_Let%27s_Go_Fishing/Let%27s%20Go%20Fishing.mp4",
+    "https://archive.org/download/A2Video_Little_Computer_People/Little%20Computer%20People.mp4",
+    "https://archive.org/download/A2Video_Lock_%27n%27_Chase/Lock%20%27n%27%20Chase.mp4",
+    "https://archive.org/download/A2Video_Lunar_Leepers/Lunar%20Leepers.mp4",
+    "https://archive.org/download/A2Video_Mad_Rat/Mad%20Rat.mp4",
+    "https://archive.org/download/A2Video_Magic_Candle/Magic%20Candle.mp4",
+    "https://archive.org/download/A2Video_Maniac_Mansion/Maniac%20Mansion.mp4",
+    "https://archive.org/download/A2Video_Marble_Madness/Marble%20Madness.mp4",
+    "https://archive.org/download/A2Video_Mars_Cars/Mars%20Cars.mp4",
+    "https://archive.org/download/A2Video_Masquerade/Masquerade.mp4",
+    "https://archive.org/download/A2Video_Maze_Craze_Construction_Set/Maze%20Craze%20Construction%20Set.mp4",
+    "https://archive.org/download/A2Video_Microbe/Microbe.mp4",
+    "https://archive.org/download/A2Video_Micro_Invaders/Micro%20Invaders.mp4",
+    "https://archive.org/download/A2Video_Might_and_Magic/Might%20and%20Magic.mp4",
+    "https://archive.org/download/A2Video_Might_and_Magic_II/Might%20and%20Magic%20II.mp4",
+    "https://archive.org/download/A2Video_Miner_2049er_II/Miner%202049er%20II.mp4",
+    "https://archive.org/download/A2Video_Ming%27s_Challenge/Ming%27s%20Challenge.mp4",
+    "https://archive.org/download/A2Video_Missile_Defense/Missile%20Defense.mp4",
+    "https://archive.org/download/A2Video_Montezuma%27s_Revenge/Montezuma%27s%20Revenge.mp4",
+    "https://archive.org/download/A2Video_Moon_Cresta/Moon%20Cresta.mp4",
+    "https://archive.org/download/A2Video_Mouskattack/Mouskattack.mp4",
+    "https://archive.org/download/A2Video_Mr._Robot_and_His_Robot_Factory/Mr.%20Robot%20and%20His%20Robot%20Factory.mp4",
+    "https://archive.org/download/A2Video_Munch-A-Bug/Munch-A-Bug.mp4",
+    "https://archive.org/download/A2Video_Mutant_Herd/Mutant%20Herd.mp4",
+    "https://archive.org/download/A2Video_N.O.R.A.D./N.O.R.A.D..mp4",
+    "https://archive.org/download/A2Video_Nebula/Nebula.mp4",
+    "https://archive.org/download/A2Video_Neuromancer/Neuromancer.mp4",
+    "https://archive.org/download/A2Video_Nibbler/Nibbler.mp4",
+    "https://archive.org/download/A2Video_Night_Stalker/Night%20Stalker.mp4",
+    "https://archive.org/download/A2Video_Nightmare/Nightmare.mp4",
+    "https://archive.org/download/A2Video_Norad/Norad.mp4",
+    "https://archive.org/download/A2Video_O%27Riley%27s_Mine/O%27Riley%27s%20Mine.mp4",
+    "https://archive.org/download/A2Video_Oil%27s_Well/Oil%27s%20Well.mp4",
+    "https://archive.org/download/A2Video_Omega_Race/Omega%20Race.mp4",
+    "https://archive.org/download/A2Video_One_on_One/One%20on%20One.mp4",
+    "https://archive.org/download/A2Video_Operation_Apocalypse/Operation%20Apocalypse.mp4",
+    "https://archive.org/download/A2Video_Operation_Whirlwind/Operation%20Whirlwind.mp4",
+    "https://archive.org/download/A2Video_Oregon_Trail/Oregon%20Trail.mp4",
+    "https://archive.org/download/A2Video_Out_of_This_World/Out%20of%20This%20World.mp4",
+    "https://archive.org/download/A2Video_Pandora%27s_Box/Pandora%27s%20Box.mp4",
+    "https://archive.org/download/A2Video_Park_Patrol/Park%20Patrol.mp4",
+    "https://archive.org/download/A2Video_Party_Mix/Party%20Mix.mp4",
+    "https://archive.org/download/A2Video_Pegasus/Pegasus.mp4",
+    "https://archive.org/download/A2Video_Pensate/Pensate.mp4",
+    "https://archive.org/download/A2Video_Pharaoh%27s_Revenge/Pharaoh%27s%20Revenge.mp4",
+    "https://archive.org/download/A2Video_Phoenix/Phoenix.mp4",
+    "https://archive.org/download/A2Video_Pinhead/Pinhead.mp4",
+    "https://archive.org/download/A2Video_Pirates/Pirates.mp4",
+    "https://archive.org/download/A2Video_Pit_Stop/Pit%20Stop.mp4",
+    "https://archive.org/download/A2Video_Pitfall!/Pitfall%21.mp4",
+    "https://archive.org/download/A2Video_Pitfall_II/Pitfall%20II.mp4",
+    "https://archive.org/download/A2Video_Planetfall/Planetfall.mp4",
+    "https://archive.org/download/A2Video_Platoon/Platoon.mp4",
+    "https://archive.org/download/A2Video_Police_Quest/Police%20Quest.mp4",
+    "https://archive.org/download/A2Video_Pollywog/Pollywog.mp4",
+    "https://archive.org/download/A2Video_Pool_1.5/Pool%201.5.mp4",
+    "https://archive.org/download/A2Video_Prisoner_II/Prisoner%20II.mp4",
+    "https://archive.org/download/A2Video_Project_Space_Station/Project%20Space%20Station.mp4",
+    "https://archive.org/download/A2Video_Puck_Man/Puck%20Man.mp4",
+    "https://archive.org/download/A2Video_Puzzle_Panic/Puzzle%20Panic.mp4",
+    "https://archive.org/download/A2Video_Quadrant_6112/Quadrant%206112.mp4",
+    "https://archive.org/download/A2Video_Quantum/Quantum.mp4",
+    "https://archive.org/download/A2Video_Quest_for_Tires/Quest%20for%20Tires.mp4",
+    "https://archive.org/download/A2Video_Questron/Questron.mp4",
+    "https://archive.org/download/A2Video_Questron_II/Questron%20II.mp4",
+    "https://archive.org/download/A2Video_Raiders_of_the_Lost_Ark/Raiders%20of%20the%20Lost%20Ark.mp4",
+    "https://archive.org/download/A2Video_Rainbow_Zone/Rainbow%20Zone.mp4",
+    "https://archive.org/download/A2Video_Rally_Speedway/Rally%20Speedway.mp4",
+    "https://archive.org/download/A2Video_Rampage/Rampage.mp4",
+    "https://archive.org/download/A2Video_Randamn/Randamn.mp4",
+    "https://archive.org/download/A2Video_Rat_Race/Rat%20Race.mp4",
+    "https://archive.org/download/A2Video_Rear_Guard/Rear%20Guard.mp4",
+    "https://archive.org/download/A2Video_Red_Alert/Red%20Alert.mp4",
+    "https://archive.org/download/A2Video_Renegade/Renegade.mp4",
+    "https://archive.org/download/A2Video_Retro_Ball/Retro%20Ball.mp4",
+    "https://archive.org/download/A2Video_Return_of_Heracles/Return%20of%20Heracles.mp4",
+    "https://archive.org/download/A2Video_Reversal/Reversal.mp4",
+    "https://archive.org/download/A2Video_River_Raid/River%20Raid.mp4",
+    "https://archive.org/download/A2Video_River_Rescue/River%20Rescue.mp4",
+    "https://archive.org/download/A2Video_Road_Runner/Road%20Runner.mp4",
+    "https://archive.org/download/A2Video_Robot_Odyssey/Robot%20Odyssey.mp4",
+    "https://archive.org/download/A2Video_Rocket_Command/Rocket%20Command.mp4",
+    "https://archive.org/download/A2Video_Rocket_Pilot/Rocket%20Pilot.mp4",
+    "https://archive.org/download/A2Video_Rocky%27s_Boots/Rocky%27s%20Boots.mp4",
+    "https://archive.org/download/A2Video_Roundabout/Roundabout.mp4",
+    "https://archive.org/download/A2Video_Run_for_It/Run%20for%20It.mp4",
+    "https://archive.org/download/A2Video_Russki_Duck/Russki%20Duck.mp4",
+    "https://archive.org/download/A2Video_Sabotage/Sabotage.mp4",
+    "https://archive.org/download/A2Video_Safari/Safari.mp4",
+    "https://archive.org/download/A2Video_Sammy_Lightfoot/Sammy%20Lightfoot.mp4",
+    "https://archive.org/download/A2Video_Satan%27s_Hollow/Satan%27s%20Hollow.mp4",
+    "https://archive.org/download/A2Video_Sea_Dragon/Sea%20Dragon.mp4",
+    "https://archive.org/download/A2Video_Seafox/Seafox.mp4",
+    "https://archive.org/download/A2Video_Serpentine/Serpentine.mp4",
+    "https://archive.org/download/A2Video_Shanghai/Shanghai.mp4",
+    "https://archive.org/download/A2Video_Shark_Attack/Shark%20Attack.mp4",
+    "https://archive.org/download/A2Video_Sherwood_Forest/Sherwood%20Forest.mp4",
+    "https://archive.org/download/A2Video_Shuttle_Intercept/Shuttle%20Intercept.mp4",
+    "https://archive.org/download/A2Video_Silent_Service/Silent%20Service.mp4",
+    "https://archive.org/download/A2Video_Skyfox/Skyfox.mp4",
+    "https://archive.org/download/A2Video_Snapper/Snapper.mp4",
+    "https://archive.org/download/A2Video_Snooper_Troops/Snooper%20Troops.mp4",
+    "https://archive.org/download/A2Video_Space_Ark/Space%20Ark.mp4",
+    "https://archive.org/download/A2Video_Space_Eggs/Space%20Eggs.mp4",
+    "https://archive.org/download/A2Video_Space_Kadet/Space%20Kadet.mp4",
+    "https://archive.org/download/A2Video_Space_Quest/Space%20Quest.mp4",
+    "https://archive.org/download/A2Video_Space_Quest_II/Space%20Quest%20II.mp4",
+    "https://archive.org/download/A2Video_Space_Quarks/Space%20Quarks.mp4",
+    "https://archive.org/download/A2Video_Space_Rescue/Space%20Rescue.mp4",
+    "https://archive.org/download/A2Video_Space_Vikings/Space%20Vikings.mp4",
+    "https://archive.org/download/A2Video_Spare_Change/Spare%20Change.mp4",
+    "https://archive.org/download/A2Video_Spectre/Spectre.mp4",
+    "https://archive.org/download/A2Video_Spindizzy/Spindizzy.mp4",
+    "https://archive.org/download/A2Video_Spy_vs_Spy/Spy%20vs%20Spy.mp4",
+    "https://archive.org/download/A2Video_Spy%27s_Demise/Spy%27s%20Demise.mp4",
+    "https://archive.org/download/A2Video_Squadrons/Squadrons.mp4",
+    "https://archive.org/download/A2Video_Star_Thief/Star%20Thief.mp4",
+    "https://archive.org/download/A2Video_Star_Trek/Star%20Trek.mp4",
+    "https://archive.org/download/A2Video_Star_Wars/Star%20Wars.mp4",
+    "https://archive.org/download/A2Video_Starblaster/Starblaster.mp4",
+    "https://archive.org/download/A2Video_Starfighter/Starfighter.mp4",
+    "https://archive.org/download/A2Video_Stargate/Stargate.mp4",
+    "https://archive.org/download/A2Video_Starglider/Starglider.mp4",
+    "https://archive.org/download/A2Video_Station_5/Station%205.mp4",
+    "https://archive.org/download/A2Video_Sticky_Bear_Basket_Bounce/Sticky%20Bear%20Basket%20Bounce.mp4",
+    "https://archive.org/download/A2Video_Street_Fighter/Street%20Fighter.mp4",
+    "https://archive.org/download/A2Video_Street_Sports_Baseball/Street%20Sports%20Baseball.mp4",
+    "https://archive.org/download/A2Video_Street_Sports_Basketball/Street%20Sports%20Basketball.mp4",
+    "https://archive.org/download/A2Video_Street_Sports_Football/Street%20Sports%20Football.mp4",
+    "https://archive.org/download/A2Video_Street_Sports_Soccer/Street%20Sports%20Soccer.mp4",
+    "https://archive.org/download/A2Video_Stunt_Cycle/Stunt%20Cycle.mp4",
+    "https://archive.org/download/A2Video_Sub_Battle_Simulator/Sub%20Battle%20Simulator.mp4",
+    "https://archive.org/download/A2Video_Summer_Games/Summer%20Games.mp4",
+    "https://archive.org/download/A2Video_Summer_Games_II/Summer%20Games%20II.mp4",
+    "https://archive.org/download/A2Video_Sundog/Sundog.mp4",
+    "https://archive.org/download/A2Video_Super_Bunny/Super%20Bunny.mp4",
+    "https://archive.org/download/A2Video_Super_Huey/Super%20Huey.mp4",
+    "https://archive.org/download/A2Video_Super_Invaders/Super%20Invaders.mp4",
+    "https://archive.org/download/A2Video_Super_Puckman/Super%20Puckman.mp4",
+    "https://archive.org/download/A2Video_Super_Taxman_2/Super%20Taxman%202.mp4",
+    "https://archive.org/download/A2Video_Sword_of_Kadash/Sword%20of%20Kadash.mp4",
+    "https://archive.org/download/A2Video_Swyft_Card/Swyft%20Card.mp4",
+    "https://archive.org/download/A2Video_Tank_Attack/Tank%20Attack.mp4",
+    "https://archive.org/download/A2Video_Tapper/Tapper.mp4",
+    "https://archive.org/download/A2Video_Taxman/Taxman.mp4",
+    "https://archive.org/download/A2Video_Temple_of_Apshai/Temple%20of%20Apshai.mp4",
+    "https://archive.org/download/A2Video_Tetris/Tetris.mp4",
+    "https://archive.org/download/A2Video_The_American_Challenge/The%20American%20Challenge.mp4",
+    "https://archive.org/download/A2Video_The_Bard%27s_Tale/The%20Bard%27s%20Tale.mp4",
+    "https://archive.org/download/A2Video_The_Bard%27s_Tale_II/The%20Bard%27s%20Tale%20II.mp4",
+    "https://archive.org/download/A2Video_The_Bard%27s_Tale_III/The%20Bard%27s%20Tale%20III.mp4",
+    "https://archive.org/download/A2Video_The_Black_Cauldron/The%20Black%20Cauldron.mp4",
+    "https://archive.org/download/A2Video_The_Coveted_Mirror/The%20Coveted%20Mirror.mp4",
+    "https://archive.org/download/A2Video_The_Duel/The%20Duel.mp4",
+    "https://archive.org/download/A2Video_The_Factory/The%20Factory.mp4",
+    "https://archive.org/download/A2Video_The_Games_Summer_Edition/The%20Games%20Summer%20Edition.mp4",
+    "https://archive.org/download/A2Video_The_Games_Winter_Edition/The%20Games%20Winter%20Edition.mp4",
+    "https://archive.org/download/A2Video_The_Goonies/The%20Goonies.mp4",
+    "https://archive.org/download/A2Video_The_Heist/The%20Heist.mp4",
+    "https://archive.org/download/A2Video_The_Last_Ninja/The%20Last%20Ninja.mp4",
+    "https://archive.org/download/A2Video_The_Movie_Monster_Game/The%20Movie%20Monster%20Game.mp4",
+    "https://archive.org/download/A2Video_The_Print_Shop/The%20Print%20Shop.mp4",
+    "https://archive.org/download/A2Video_The_Quest/The%20Quest.mp4",
+    "https://archive.org/download/A2Video_The_Spy_Strikes_Back/The%20Spy%20Strikes%20Back.mp4",
+    "https://archive.org/download/A2Video_Thexder/Thexder.mp4",
+    "https://archive.org/download/A2Video_Threshold/Threshold.mp4",
+    "https://archive.org/download/A2Video_Thunder_Bombs/Thunder%20Bombs.mp4",
+    "https://archive.org/download/A2Video_Thunderchopper/Thunderchopper.mp4",
+    "https://archive.org/download/A2Video_Time_Zone/Time%20Zone.mp4",
+    "https://archive.org/download/A2Video_Times_of_Lore/Times%20of%20Lore.mp4",
+    "https://archive.org/download/A2Video_Titan_Cronus/Titan%20Cronus.mp4",
+    "https://archive.org/download/A2Video_Tomahawk/Tomahawk.mp4",
+    "https://archive.org/download/A2Video_Track_%26_Field/Track%20%26%20Field.mp4",
+    "https://archive.org/download/A2Video_Transylvania/Transylvania.mp4",
+    "https://archive.org/download/A2Video_Treasure_Island/Treasure%20Island.mp4",
+    "https://archive.org/download/A2Video_Trinity/Trinity.mp4",
+    "https://archive.org/download/A2Video_Troll%27s_Tale/Troll%27s%20Tale.mp4",
+    "https://archive.org/download/A2Video_Tunnel_Terror/Tunnel%20Terror.mp4",
+    "https://archive.org/download/A2Video_Turbo_Pascal_3.0/Turbo%20Pascal%203.0.mp4",
+    "https://archive.org/download/A2Video_Twerps/Twerps.mp4",
+    "https://archive.org/download/A2Video_Type_Attack/Type%20Attack.mp4",
+    "https://archive.org/download/A2Video_U-Boat_Command/U-Boat%20Command.mp4",
+    "https://archive.org/download/A2Video_Ultima/Ultima.mp4",
+    "https://archive.org/download/A2Video_Ultima_II/Ultima%20II.mp4",
+    "https://archive.org/download/A2Video_Ultima_III/Ultima%20III.mp4",
+    "https://archive.org/download/A2Video_Ultima_IV/Ultima%20IV.mp4",
+    "https://archive.org/download/A2Video_Ultima_V/Ultima%20V.mp4",
+    "https://archive.org/download/A2Video_Up_%27n_Down/Up%20%27n%20Down.mp4",
+    "https://archive.org/download/A2Video_Vanguard/Vanguard.mp4",
+    "https://archive.org/download/A2Video_Victory_Road/Victory%20Road.mp4",
+    "https://archive.org/download/A2Video_Video_Vegas/Video%20Vegas.mp4",
+    "https://archive.org/download/A2Video_Vindicator/Vindicator.mp4",
+    "https://archive.org/download/A2Video_Warp_Destroyer/Warp%20Destroyer.mp4",
+    "https://archive.org/download/A2Video_Way_Out/Way%20Out.mp4",
+    "https://archive.org/download/A2Video_Where_in_Europe_is_Carmen_Sandiego/Where%20in%20Europe%20is%20Carmen%20Sandiego.mp4",
+    "https://archive.org/download/A2Video_Where_in_the_USA_is_Carmen_Sandiego/Where%20in%20the%20USA%20is%20Carmen%20Sandiego.mp4",
+    "https://archive.org/download/A2Video_Where_in_the_World_is_Carmen_Sandiego/Where%20in%20the%20World%20is%20Carmen%20Sandiego.mp4",
+    "https://archive.org/download/A2Video_Whirlybird_Run/Whirlybird%20Run.mp4",
+    "https://archive.org/download/A2Video_Windwalker/Windwalker.mp4",
+    "https://archive.org/download/A2Video_Winter_Games/Winter%20Games.mp4",
+    "https://archive.org/download/A2Video_Wishbringer/Wishbringer.mp4",
+    "https://archive.org/download/A2Video_Wizard_of_Id%27s_WizType/Wizard%20of%20Id%27s%20WizType.mp4",
+    "https://archive.org/download/A2Video_Wizardry/Wizardry.mp4",
+    "https://archive.org/download/A2Video_Wizardry_II/Wizardry%20II.mp4",
+    "https://archive.org/download/A2Video_Wizardry_III/Wizardry%20III.mp4",
+    "https://archive.org/download/A2Video_Wizardry_IV/Wizardry%20IV.mp4",
+    "https://archive.org/download/A2Video_Wizardry_V/Wizardry%20V.mp4",
+    "https://archive.org/download/A2Video_World_Karate_Championship/World%20Karate%20Championship.mp4",
+    "https://archive.org/download/A2Video_World%27s_Greatest_Baseball_Game/World%27s%20Greatest%20Baseball%20Game.mp4",
+    "https://archive.org/download/A2Video_World%27s_Greatest_Football_Game/World%27s%20Greatest%20Football%20Game.mp4",
+    "https://archive.org/download/A2Video_Xevious/Xevious.mp4",
+    "https://archive.org/download/A2Video_Zany_Golf/Zany%20Golf.mp4",
+    "https://archive.org/download/A2Video_Zenith/Zenith.mp4",
+    "https://archive.org/download/A2Video_Zeppelin/Zeppelin.mp4",
+    "https://archive.org/download/A2Video_Zero_Gravity_Pinball/Zero%20Gravity%20Pinball.mp4",
+    "https://archive.org/download/A2Video_Zig_Zag/Zig%20Zag.mp4",
+    "https://archive.org/download/A2Video_Zork_I/Zork%20I.mp4",
+    "https://archive.org/download/A2Video_Zork_II/Zork%20II.mp4",
+    "https://archive.org/download/A2Video_Zork_III/Zork%20III.mp4"
+];
+
+// Shuffle array for variety
+function shuffleArray(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+    return array;
+}
+
+// Shuffle videos
+videoUrls = shuffleArray(videoUrls);
+
+console.log('Loaded ' + videoUrls.length + ' MP4 video URLs');
+
+// Track currently playing videos to avoid duplicates
+var currentlyPlaying = new Array(gridVideos.length).fill(null);
+var failedVideos = [];
+
+// Hide progress bar
+// $('#progress').hide();
+
+// Start playing videos
+for(var i = 0; i < gridVideos.length; i++){
+    playArray(i, gridVideos[i], videoUrls);
+}
+
+function getUniqueVideoUrl(gridIndex) {
+    // Filter out failed videos and currently playing ones
+    var availableVideos = videoUrls.filter(function(url) {
+        return !failedVideos.includes(url) && !currentlyPlaying.includes(url);
+    });
     
-	
-$.getJSON( "https://archive.org/advancedsearch.php?q=A2Video+AND+mediatype%3A%28movies%29&fl%5B%5D=identifier&sort%5B%5D=addeddate+desc&sort%5B%5D=&sort%5B%5D=&rows=5000&page=1&output=json&callback=?&save=yes", function( data ) {
-    console.log('loaded');
-    var identifiers = []; // create array here
-    $.each(data.response.docs, function (index, doc) {
-        identifiers.push(doc.identifier); //push values here
-	
-	 	var identifierURL = "https://archive.org/metadata/" + doc.identifier + "&callback=?";
-		
-		//console.log(identifierURL);
-		
-		$.getJSON( identifierURL, function( item ) {
-		 // var items = [];
-		 
-		// console.log(item.dir);
-		 
-		  $.each( item.files, function( key, val ) {
-			  
-			  if(val.format == desiredFormat) {
-				  var MP4URL= "https://archive.org" + item.dir +"/"+ val.name;
-				//  console.log(MP4URL);
-				  videos.push( MP4URL );  
-				  
-				  $('#progress').css("width",identifiers.length);
-				  $('#bar').css("width",videos.length);
-				  
-				  if(videos.length == identifiers.length - 1) {
-					  
-					  	$('#progress').hide();
-					  
-					  	for(var i=0;i<gridVideos.length;i++){
-						 	playArray(i,gridVideos[i],videos,null);
-						}
-	
-				  }
+    // If not enough available videos, just filter out currently playing
+    if (availableVideos.length < 1) {
+        availableVideos = videoUrls.filter(function(url) {
+            return !currentlyPlaying.includes(url);
+        });
+    }
+    
+    // If still no videos, use any video
+    if (availableVideos.length < 1) {
+        availableVideos = videoUrls;
+    }
+    
+    return availableVideos[Math.floor(Math.random() * availableVideos.length)];
+}
 
-			  }
-			  
-		  });
-		  
-	    });
-
-	});
-
-});	
-	
-	
-/*	for(i=0;i<516;i++){
-		
-		videos[i] = padDigits(i,4) + ".mp4";
-		
-	}
-*/
-	
-	function playArray(index,ele,array,listener){
-	   
-	   	index=Math.floor(Math.random()*array.length);
-	   
-	    ele.src = array[index];
-	    ele.load();
-	    //ele.play();
-	    index++;
-	    if(index>=array.length){
-	        index=0;
-	    }
-	    listener = ele.addEventListener('ended',function(){
-	        playArray(index,ele,array,listener);
-	    },false);
-	    
-	    console.log("Playing " + videos[index]);
-	}
-		
+function playArray(gridIndex, ele, array){
+    var videoUrl = getUniqueVideoUrl(gridIndex);
+    currentlyPlaying[gridIndex] = videoUrl;
+    
+    ele.src = videoUrl;
+    ele.load();
+    ele.play().catch(function(e) {
+        console.log("Autoplay may require user interaction");
+    });
+    
+    // Handle load errors
+    ele.onerror = function() {
+        console.error("Failed to load: " + videoUrl);
+        failedVideos.push(videoUrl);
+        // Try another video
+        playArray(gridIndex, ele, array);
+    };
+    
+    // Handle video ending
+    ele.onended = function() {
+        playArray(gridIndex, ele, array);
+    };
+    
+    console.log("Grid " + gridIndex + " playing: " + videoUrl);
+}
 
 }
 //]]> 
@@ -124,16 +583,19 @@ $.getJSON( "https://archive.org/advancedsearch.php?q=A2Video+AND+mediatype%3A%28
 <style>
 
 	video {
-		width: 25%;
-		height: 30%;
+		width: 33.33%;
+		height: 50%;
 		padding: 0;
 		margin: 0;
 		float:left;
+		background: #000;
 	}
+	
 	body {
 		padding: 0;
 		margin: 0;
 		background: #000;
+		font-family: monospace;
 	}
 	
 </style>  
@@ -142,23 +604,19 @@ $.getJSON( "https://archive.org/advancedsearch.php?q=A2Video+AND+mediatype%3A%28
 <body>
 	<div id="container" style="width:100%">
 		
+<!-- 
 		<div id="progress" style="border:1px solid #fff;height:10px; padding: 1px; margin: 10% auto; width: 0px;">
 			<div id="bar" style="height:8px; float: left; background-color: #fff;"></div>
 		</div>
+ -->
 		
 	<div id="grid" style="margin:auto; width:90%;">
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>
-	  <video id="GridVideo" autoplay="true"></video>	
+		<video id="GridVideo" autoplay="true"></video>
+		<video id="GridVideo" autoplay="true"></video>
+		<video id="GridVideo" autoplay="true"></video>
+		<video id="GridVideo" autoplay="true"></video>
+		<video id="GridVideo" autoplay="true"></video>
+		<video id="GridVideo" autoplay="true"></video>
 	</div>	
 	</div>
 </body>

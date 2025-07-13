@@ -1,125 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- MAC BOOT THEATER, by Charles Mangin                            -->
+<!-- Requires Javascript. Utilizes the 4am Mac boot video           -->
+<!-- collection to provide an endless grid of booting Mac           -->
+<!-- programs for whatever reason you might need that.              -->
 
-<!-- APPLE BOOT THEATER, by Charles Mangin                        -->
-<!-- Requires Javascript. Utilizes the 4am boot video collection  -->
-<!-- to provide an endless grid of booting Apple II programs      -->
-<!-- for whatever reason you might need that.                     -->
+<!-- Updated by @soffronoff@mastodon.social to work with Safari     -->
+<!-- and to get around some changes in the API at Internet Archive  -->
+<!-- and make launch faster and to make sure the same video doesn't -->
+<!-- display on the screen at the same time.                        -->
 
-<!-- Small patch by @soffronoff@mastodon.social to use MPEG4 video when OGG not available -->
-<!-- Player is muted							  				  -->
+<!-- It's less dynamic but also a lot less fiddly.  Years on and    -->
+<!-- Safari still doesn't do native OGG...                          -->
 
-<!-- Mac Boot video version.  Thanks again, 4AM!				  -->
-
+<!-- Fast version with hardcoded Mac URLs - no runtime lookups      -->
+<!-- MUTED VERSION - plays videos silently                          -->
 
 <html>
      <head>
      <meta charset="UTF-8">
-	<title>Apple Boot Theater, by Charles Mangin</title>
+	<title>Mac Boot Theater, by Charles Mangin (Muted)</title>
 			
+<!-- jquery not needed for hardcoded versions
 <script 
 	src="https://code.jquery.com/jquery-3.6.4.min.js" 
 	integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" 
-	crossorigin="anonymous"></script>
+	crossorigin="anonymous"></script>	
+ -->
 		
 <script type='text/javascript'>
 	//<![CDATA[
 
-function padDigits(number, digits) {
-    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
-}
-
 window.onload=function(){
-	
-var videos = [];
 
 var gridVideos = document.getElementsByTagName("video");
 
-var vid = document.createElement('video');
-    oggSupp = vid.canPlayType('video/ogg');
-    console.log ('oggSupp: ' + oggSupp);
-    if(oggSupp == 'maybe not') {
-    		desiredFormat = "Ogg Video";
-    		console.log('Want Ogg');
-    } else {
-    		desiredFormat = "MPEG4";
-    		console.log('Fall back to MPEG4');
-    };
-    console.log('desired format: ' + desiredFormat);
+// Mac MP4 video URLs for universal compatibility
+var videoUrls = [
+    "https://archive.org/download/MacVideo_Alter_Ego_Female_Version/Alter Ego Female Version.mp4",
+    "https://archive.org/download/MacVideo_Alter_Ego_Male_Version/Alter Ego Male Version.mp4",
+    "https://archive.org/download/MacVideo_Alternate_Reality__The_City/Alternate Reality- The City.mp4",
+    "https://archive.org/download/MacVideo_Balance_of_Power/Balance of Power.mp4",
+    "https://archive.org/download/MacVideo_Borrowed_Time/Borrowed Time.mp4",
+    "https://archive.org/download/MacVideo_Championship_Star_League_Baseball/Championship Star League Baseball.mp4",
+    "https://archive.org/download/MacVideo_Cutthroats_r23_840809_C/Cutthroats r23-840809-C.mp4",
+    "https://archive.org/download/MacVideo_Deadline_r27_831005_C/Deadline r27-831005-C.mp4",
+    "https://archive.org/download/MacVideo_Defender_of_the_Crown/Defender of the Crown.mp4",
+    "https://archive.org/download/MacVideo_Deja_Vu_2/Deja Vu 2.mp4",
+    "https://archive.org/download/MacVideo_Deja_Vu/Deja Vu.mp4",
+    "https://archive.org/download/MacVideo_Deluxe_Music_Construction_Set_v10/Deluxe Music Construction Set v1.0.mp4",
+    "https://archive.org/download/MacVideo_Downhill_Racer/Downhill Racer.mp4",
+    "https://archive.org/download/MacVideo_Dragonworld/Dragonworld.mp4",
+    "https://archive.org/download/MacVideo_Forbidden_Castle/Forbidden Castle.mp4",
+    "https://archive.org/download/MacVideo_Fusillade/Fusillade.mp4",
+    "https://archive.org/download/MacVideo_Geometry_v11/Geometry v1.1.mp4",
+    "https://archive.org/download/MacVideo_Habadex_v11/Habadex v1.1.mp4",
+    "https://archive.org/download/MacVideo_Hacker_II/Hacker II.mp4",
+    "https://archive.org/download/MacVideo_Harrier_Strike_Mission/Harrier Strike Mission.mp4",
+    "https://archive.org/download/MacVideo_Indiana_Jones_and_the_Revenge_of_the_Ancients/Indiana Jones and the Revenge of the Ancients.mp4",
+    "https://archive.org/download/MacVideo_Infidel_r22_840522_C/Infidel r22-840522-C.mp4",
+    "https://archive.org/download/MacVideo_Jam_Session/Jam Session.mp4",
+    "https://archive.org/download/MacVideo_Legends_of_the_Lost_Realm_I__The_Gathering_of_Heroes_v20/Legends of the Lost Realm I- The Gathering of Heroes v2.0.mp4",
+    "https://archive.org/download/MacVideo_Lode_Runner_v10/Lode Runner v1.0.mp4",
+    "https://archive.org/download/MacVideo_MacBackup_v26/MacBackup v2.6.mp4",
+    "https://archive.org/download/MacVideo_MacCheckers_and_Reversi/MacCheckers and Reversi.mp4",
+    "https://archive.org/download/MacVideo_MacCopy_v11/MacCopy v1.1.mp4",
+    "https://archive.org/download/MacVideo_MacGolf_v20/MacGolf v2.0.mp4",
+    "https://archive.org/download/MacVideo_MacWars/MacWars.mp4",
+    "https://archive.org/download/MacVideo_Master_Track_Pro_v34a/Master Track Pro v3.4a.mp4",
+    "https://archive.org/download/MacVideo_Master_Tracks_Pro_v110/Master Tracks Pro v1.10.mp4",
+    "https://archive.org/download/MacVideo_Master_Tracks_Pro_v200/Master Tracks Pro v2.00.mp4",
+    "https://archive.org/download/MacVideo_Master_Tracks_Pro_v40/Master Tracks Pro v4.0.mp4",
+    "https://archive.org/download/MacVideo_Maze_Survival/Maze Survival.mp4",
+    "https://archive.org/download/MacVideo_Mindshadow/Mindshadow.mp4",
+    "https://archive.org/download/MacVideo_Moriartys_Revenge_v10/Moriarty's Revenge v1.0.mp4",
+    "https://archive.org/download/MacVideo_Moriartys_Revenge_v103/Moriarty's Revenge v1.03.mp4",
+    "https://archive.org/download/MacVideo_Murder_by_the_Dozen_Thunder_Mountain/Murder by the Dozen Thunder Mountain.mp4",
+    "https://archive.org/download/MacVideo_My_Office_v27/My Office v2.7.mp4",
+    "https://archive.org/download/MacVideo_One_on_One/One on One.mp4",
+    "https://archive.org/download/MacVideo_OrbQuest_v104/OrbQuest v1.04.mp4",
+    "https://archive.org/download/MacVideo_Patton_vs_Rommel_v105/Patton vs Rommel v1.05.mp4",
+    "https://archive.org/download/MacVideo_Pensate_v11/Pensate v1.1.mp4",
+    "https://archive.org/download/MacVideo_PFS_File_and_Report_A00/PFS File and Report A00.mp4",
+    "https://archive.org/download/MacVideo_Physics_v10/Physics v1.0.mp4",
+    "https://archive.org/download/MacVideo_Physics_v12/Physics v1.2.mp4",
+    "https://archive.org/download/MacVideo_Pinball_Construction_Set_v25/Pinball Construction Set v2.5.mp4",
+    "https://archive.org/download/MacVideo_Pipe_Dream_v12/Pipe Dream v1.2.mp4",
+    "https://archive.org/download/MacVideo_Professional_Composer_v23Mfx/Professional Composer v2.3Mfx.mp4",
+    "https://archive.org/download/MacVideo_Q_Sheet_v10/Q Sheet v1.0.mp4",
+    "https://archive.org/download/MacVideo_Rambo/Rambo.mp4",
+    "https://archive.org/download/MacVideo_Rogue_v10/Rogue v1.0.mp4",
+    "https://archive.org/download/MacVideo_Seastalker_r15_840502_C/Seastalker r15-840502-C.mp4",
+    "https://archive.org/download/MacVideo_Seven_Cities_of_Gold/Seven Cities of Gold.mp4",
+    "https://archive.org/download/MacVideo_Shadowgate/Shadowgate.mp4",
+    "https://archive.org/download/MacVideo_Shanghai/Shanghai.mp4",
+    "https://archive.org/download/MacVideo_Shufflepuck_Cafe/Shufflepuck Cafe.mp4",
+    "https://archive.org/download/MacVideo_Sierra_Championship_Boxing/Sierra Championship Boxing.mp4",
+    "https://archive.org/download/MacVideo_SimCity_v11/SimCity v1.1.mp4",
+    "https://archive.org/download/MacVideo_SimCity_v12/SimCity v1.2.mp4",
+    "https://archive.org/download/MacVideo_SimEarth_v10/SimEarth v1.0.mp4",
+    "https://archive.org/download/MacVideo_Skyfox/Skyfox.mp4",
+    "https://archive.org/download/MacVideo_Smash_Hit_Racquetball_v101/Smash Hit Racquetball v1.01.mp4",
+    "https://archive.org/download/MacVideo_Speed_Reader_II_v11/Speed Reader II v1.1.mp4",
+    "https://archive.org/download/MacVideo_Speller_Bee_v11/Speller Bee v1.1.mp4",
+    "https://archive.org/download/MacVideo_Star_Trek__The_Kobayashi_Alternative/Star Trek- The Kobayashi Alternative.mp4",
+    "https://archive.org/download/MacVideo_Stratego_v10/Stratego v1.0.mp4",
+    "https://archive.org/download/MacVideo_Strip_Poker/Strip Poker.mp4",
+    "https://archive.org/download/MacVideo_Tass_Times_in_Tonetown/Tass Times in Tonetown.mp4",
+    "https://archive.org/download/MacVideo_Temple_of_Apshai_Trilogy_1985_09_30/Temple of Apshai Trilogy 1985.09.30.mp4",
+    "https://archive.org/download/MacVideo_Temple_of_Apshai_Trilogy_1985_10_08/Temple of Apshai Trilogy 1985.10.08.mp4",
+    "https://archive.org/download/MacVideo_The_Chessmaster_2000_v102/The Chessmaster 2000 v1.02.mp4",
+    "https://archive.org/download/MacVideo_The_Crimson_Crown/The Crimson Crown.mp4",
+    "https://archive.org/download/MacVideo_The_Duel__Test_Drive_II/The Duel- Test Drive II.mp4",
+    "https://archive.org/download/MacVideo_The_Hitchhikers_Guide_to_the_Galaxy_r47_840914_C/The Hitchhiker's Guide to the Galaxy r47-840914-C.mp4",
+    "https://archive.org/download/MacVideo_The_King_of_Chicago/The King of Chicago.mp4",
+    "https://archive.org/download/MacVideo_The_Mind_Prober_v10/The Mind Prober v1.0.mp4",
+    "https://archive.org/download/MacVideo_The_Mist/The Mist.mp4",
+    "https://archive.org/download/MacVideo_The_Quest/The Quest.mp4",
+    "https://archive.org/download/MacVideo_The_Surgeon_v15/The Surgeon v1.5.mp4",
+    "https://archive.org/download/MacVideo_The_Toy_Shop_v11/The Toy Shop v1.1.mp4",
+    "https://archive.org/download/MacVideo_The_Witness_r22_840924_C/The Witness r22-840924-C.mp4",
+    "https://archive.org/download/MacVideo_Uninvited/Uninvited.mp4",
+    "https://archive.org/download/MacVideo_Where_in_Europe_is_Carmen_Sandiego_v10/Where in Europe is Carmen Sandiego v1.0.mp4",
+    "https://archive.org/download/MacVideo_Winter_Games_1985_10_24/Winter Games 1985.10.24.mp4",
+    "https://archive.org/download/MacVideo_Winter_Games_1985_10_31/Winter Games 1985.10.31.mp4",
+    "https://archive.org/download/MacVideo_Wishbringer_r68_850501_D/Wishbringer r68-850501-D.mp4",
+    "https://archive.org/download/MacVideo_Wizardry_v110/Wizardry v1.10.mp4",
+    "https://archive.org/download/MacVideo_Zork_II_r48_840904_C/Zork II r48-840904-C.mp4",
+    "https://archive.org/download/MacVideo_Zork_III_r17_840727_C/Zork III r17-840727-C.mp4"
+];
+
+// Shuffle array for variety
+function shuffleArray(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+    return array;
+}
+
+// Shuffle videos on load
+videoUrls = shuffleArray(videoUrls);
+
+console.log('Loaded ' + videoUrls.length + ' Mac video URLs (muted)');
+
+// Track currently playing videos to avoid duplicates on screen
+var currentlyPlaying = new Array(gridVideos.length).fill(null);
+var failedVideos = [];
+
+// Hide progress bar (not needed for hardcoded version)
+// $('#progress').hide();
+
+// Function to get a unique video URL that's not currently playing
+function getUniqueVideoUrl(gridIndex) {
+    // Filter out videos that are currently playing or have failed
+    var availableVideos = videoUrls.filter(function(url) {
+        return !failedVideos.includes(url) && !currentlyPlaying.includes(url);
+    });
     
-	
-$.getJSON( "https://archive.org/advancedsearch.php?q=mac_4amp4+AND+mediatype%3A%28movies%29&fl%5B%5D=identifier&sort%5B%5D=addeddate+desc&sort%5B%5D=&sort%5B%5D=&rows=5000&page=1&output=json&callback=?&save=yes", function( data ) {
-    console.log('loaded');
-    var identifiers = []; // create array here
-    $.each(data.response.docs, function (index, doc) {
-        identifiers.push(doc.identifier); //push values here
-	
-	 	var identifierURL = "https://archive.org/metadata/" + doc.identifier + "&callback=?";
-		
-		//console.log(identifierURL);
-		
-		$.getJSON( identifierURL, function( item ) {
-		 // var items = [];
-		 
-		// console.log(item.dir);
-		 
-		  $.each( item.files, function( key, val ) {
-			  
-			  if(val.format == desiredFormat) {
-				  var MP4URL= "https://archive.org" + item.dir +"/"+ val.name;
-				//  console.log(MP4URL);
-				  videos.push( MP4URL );  
-				  
-				  $('#progress').css("width",identifiers.length);
-				  $('#bar').css("width",videos.length);
-				  
-				  if(videos.length == identifiers.length - 1) {
-					  
-					  	$('#progress').hide();
-					  
-					  	for(var i=0;i<gridVideos.length;i++){
-						 	playArray(i,gridVideos[i],videos,null);
-						}
-	
-				  }
+    // If we've filtered out too many, just exclude currently playing
+    if (availableVideos.length < 1) {
+        availableVideos = videoUrls.filter(function(url) {
+            return !currentlyPlaying.includes(url);
+        });
+    }
+    
+    // If still no videos available, use all videos
+    if (availableVideos.length < 1) {
+        availableVideos = videoUrls;
+    }
+    
+    // Return a random video from available ones
+    return availableVideos[Math.floor(Math.random() * availableVideos.length)];
+}
 
-			  }
-			  
-		  });
-		  
-	    });
+function playArray(gridIndex, ele, array){
+    var videoUrl = getUniqueVideoUrl(gridIndex);
+    currentlyPlaying[gridIndex] = videoUrl;
+    
+    ele.src = videoUrl;
+    ele.muted = true;  // MUTE THE VIDEO
+    ele.load();
+    ele.play().catch(function(e) {
+        console.log("Autoplay may require user interaction");
+    });
+    
+    // Handle errors by trying a different video
+    ele.onerror = function() {
+        console.error("Failed to load: " + videoUrl);
+        failedVideos.push(videoUrl);
+        playArray(gridIndex, ele, array);
+    };
+    
+    // When video ends, play another unique one
+    ele.onended = function() {
+        playArray(gridIndex, ele, array);
+    };
+    
+    console.log("Grid " + gridIndex + " playing (muted): " + videoUrl);
+}
 
-	});
-
-});	
-	
-	
-/*	for(i=0;i<516;i++){
-		
-		videos[i] = padDigits(i,4) + ".mp4";
-		
-	}
-*/
-	
-	function playArray(index,ele,array,listener){
-	   
-	   	index=Math.floor(Math.random()*array.length);
-	   
-	    ele.src = array[index];
-	    ele.load();
-	    //ele.play();
-	    index++;
-	    if(index>=array.length){
-	        index=0;
-	    }
-	    listener = ele.addEventListener('ended',function(){
-	        playArray(index,ele,array,listener);
-	    },false);
-	    
-	    console.log("Playing " + videos[index]);
-	}
-		
+// Start playing videos on all grid positions
+for(var i = 0; i < gridVideos.length; i++){
+    playArray(i, gridVideos[i], videoUrls);
+}
 
 }
 //]]> 
@@ -129,41 +218,46 @@ $.getJSON( "https://archive.org/advancedsearch.php?q=mac_4amp4+AND+mediatype%3A%
 <style>
 
 	video {
-		width: 25%;
-		height: 30%;
+		width: 33.33%;
+		height: 50%;
 		padding: 0;
 		margin: 0;
 		float:left;
+		object-fit: contain;
+		background: #000;
 	}
+	
 	body {
 		padding: 0;
 		margin: 0;
 		background: #000;
+		font-family: monospace;
+		overflow: hidden;
+	}
+	
+	#progress {
+		display: none;
 	}
 	
 </style>  
 </head>
 
 <body>
-	<div id="container" style="width:100%">
+	<div id="container" style="width:100%; height: 100vh;">
 		
+<!-- 
 		<div id="progress" style="border:1px solid #fff;height:10px; padding: 1px; margin: 10% auto; width: 0px;">
 			<div id="bar" style="height:8px; float: left; background-color: #fff;"></div>
 		</div>
+ -->
 		
-	<div id="grid" style="margin:auto; width:90%;">
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>
-	  <video id="GridVideo" autoplay="true" muted></video>		
+	<div id="grid" style="margin:auto; width:100%; height: 100%;">
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
 	</div>	
 	</div>
 </body>
