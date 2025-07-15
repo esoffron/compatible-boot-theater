@@ -11,7 +11,7 @@ New in 2025:
 - The API at Internet Archive had changed in some way which broke URL enumerating...
 - 4AM has already discovered* and cracked all the software ever available, so now I just have a static listing of his crack movies in the Javascript. This makes startup faster and reduces load on the Internet Archive.  It was also a lot easier than trying to debug the broken fetch logic and encoding on the URL strings...
 - I took out the OGG / MP4 compatibility test logic which also had broken on newer browser versions.  It's just MP4 now.  That's disappointing (OGG is smaller for same quality) but this version is intended to be compatible. (I tried a hack that used a Javascript OGG player in Safari but performance in the browser playing multiple simultaneous videos was lousy.)
-- It now won't show the same video multiple times on the same screen, which was unattractive and not uncommon on the Mac side where there are many fewer videos.)
+- It now won't show the same video multiple times on the same screen, which was unattractive and not uncommon on the Mac side where there are many fewer videos.
 
 \* actual discovery not guaranteed ;)
 
