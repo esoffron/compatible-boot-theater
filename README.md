@@ -2,11 +2,13 @@
 This *was* a small patch to Charles Mangin's awesome web page that displays 4AM's Apple II crack movies.  When I checked back recently my code (and his original as well) no longer worked.  So now it's a medium patch to his awesome original idea.
 
 ### NEW for INIT HELLO 2025: It actually works again!
-![INITLogo](https://i0.wp.com/init-hello.org/wp-content/uploads/2025/03/sketchymonitor-transparent-greentxt-simple-small.png)
-
 **INIT HELLO is an exciting new Apple II conference this year.  See the info at https://init-hello.org.**
 
-New in 2025:
+New in December 2025:
+- Stale URLs were clogging things up.  Cleaned up the list to get a fresh list of working / not working.
+- While I was at it, refactored code to bring the common URLs and Javascript into included files.
+
+New in July 2025:
 
 - The API at Internet Archive had changed in some way which broke URL enumerating...
 - 4AM has already discovered* and cracked all the software ever available, so now I just have a static listing of his crack movies in the Javascript. This makes startup faster and reduces load on the Internet Archive.  It was also a lot easier than trying to debug the broken fetch logic and encoding on the URL strings...
