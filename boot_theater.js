@@ -36,6 +36,7 @@
 		var videoUrls = config.videoUrls || window.videoUrls;
 		var label = config.label || 'video URLs';
 		var muted = !!config.muted;
+		var fixedGridUrls = config.fixedGridUrls || {};
 
 		var gridVideos = document.getElementsByTagName('video');
 		if (!gridVideos || gridVideos.length < 1) {
@@ -99,7 +100,9 @@
 		}
 
 		function playAtIndex(gridIndex, ele) {
-			var videoUrl = getUniqueVideoUrl();
+			var videoUrl = fixedGridUrls.hasOwnProperty(gridIndex)
+				? fixedGridUrls[gridIndex]
+				: getUniqueVideoUrl();
 			currentlyPlaying[gridIndex] = videoUrl;
 
 			ele.src = videoUrl;
@@ -127,4 +130,3 @@
 
 	addLoadListener(startBootTheater);
 })();
-

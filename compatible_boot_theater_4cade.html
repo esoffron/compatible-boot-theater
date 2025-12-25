@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- APPLE BOOT THEATER, by Charles Mangin                          -->
+<!-- Requires Javascript. Utilizes the 4am boot video collection    -->
+<!-- to provide an endless grid of booting Apple II programs        -->
+<!-- for whatever reason you might need that.                    	-->
+
+<!-- Updated by @soffronoff@mastodon.social to work with Safari     -->
+<!-- and to get around some changes in the API at Internet Archive  -->
+<!-- and make launch faster and to make sure the same video doesn't -->
+<!-- display on the screen at the same time.                        -->
+
+<!-- It's less dynamic but also a lot less fiddly.  Years on and    -->
+<!-- Safari still doesn't do native OGG...                          -->
+
+
+<!-- Fast version with hardcoded URLs - no runtime lookups 			-->
+<!-- MUTED VERSION - plays videos silently for INIT HELLO  			-->
+
+<html>
+     <head>
+     <meta charset="UTF-8">
+	<title>Apple Boot Theater, by Charles Mangin (Muted)</title>
+	<link rel="stylesheet" href="boot_theater.css">
+			
+<!-- jquery not needed for hardcoded versions
+<script 
+	src="https://code.jquery.com/jquery-3.6.4.min.js" 
+	integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" 
+	crossorigin="anonymous"></script>	
+ -->	
+<script src="a2_video_urls.js"></script>
+		
+<script type='text/javascript'>
+	//<![CDATA[
+
+// MP4 video URLs for universal compatibility
+var videoUrls = window.A2_VIDEO_URLS;
+
+window.bootTheaterConfig = {
+	videoUrls: videoUrls,
+	muted: true,
+	label: 'MP4 video URLs'
+};
+
+//]]>
+</script>
+<script src="boot_theater.js"></script>
+</head>
+
+<body>
+	<div id="container">		
+<!-- 
+		<div id="progress" style="border:1px solid #fff;height:10px; padding: 1px; margin: 10% auto; width: 0px;">
+			<div id="bar" style="height:8px; float: left; background-color: #fff;"></div>
+		</div>
+ -->
+		
+<div id="grid">		
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<video id="GridVideo" autoplay="true" muted></video>
+		<iframe
+			id="GridFrame"
+			src="https://esoffron.github.io/compatible-boot-theater/apple2ts/index.html?theme=minimal#https://esoffron.github.io/compatible-boot-theater/4cade-attract.hdv"
+			allow="autoplay"
+			loading="lazy"
+			frameborder="0"
+		></iframe>
+	</div>	
+	</div>
+</body>
+</html>

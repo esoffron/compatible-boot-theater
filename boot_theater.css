@@ -9,12 +9,14 @@ body {
 	font-family: monospace;
 }
 
-video {
+video,
+iframe {
 	width: 33.33%;
 	height: 50%;
 	padding: 0;
 	margin: 0;
 	background: #000;
+	border: 0;
 }
 
 #container {
@@ -34,4 +36,3 @@ video {
 	align-items: center;
 	height: 100vh;
 }
-
