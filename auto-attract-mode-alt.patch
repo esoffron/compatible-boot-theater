@@ -1,0 +1,28 @@
+diff --git a/src/4cade.a b/src/4cade.a
+index 36397bac9..0c13a8c0c 100644
+--- a/src/4cade.a
++++ b/src/4cade.a
+@@ -93,12 +93,12 @@ SilenceIsGolden
+          lda   #>Reenter
+          sta   $FFFD
+ RestoreStackNextTime
+-         bne   SearchMode            ; (SMC) not an unconditional branch because code
++         bne   JumpToAttract         ; (SMC) not an unconditional branch because code
+                                      ; might change the branch target to the next opcode
+          ; If we fall through to here, it's because we backed up the stack and
+          ; stack pointer and wanted this routine to restore it and return to
+          ; caller.
+-         lda   #(SearchMode - RestoreStackNextTime) - 2
++         lda   #(JumpToAttract - RestoreStackNextTime) - 2
+                                      ; reset to branch so we don't try to
+          sta   RestoreStackNextTime + 1
+                                      ; restore the same stack twice
+@@ -117,6 +117,8 @@ SwitchToBank1
+ ResetVector                          ; 6 bytes, copied to $100
+          +READ_RAM1_NO_WRITE
+          jmp   Reenter
++JumpToAttract                        ; trampoline to MegaAttractMode
++         jmp   MegaAttractMode
+
+          ; these routines will only be called after relocating to language card
+          !source "src/ui.search.mode.a"         ; \__ execution falls through
