@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- APPLE BOOT THEATER - CRACK IMAGES EDITION, by Charles Mangin   -->
+<!-- Modified to display random crack screen images from the        -->
+<!-- 4am collection                                                  -->
+
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Apple Boot Theater - Crack Images</title>
+	<link rel="stylesheet" href="boot_theater.css">
+
+	<style>
+		#grid img {
+			width: 33.33%;
+			height: 50%;
+			object-fit: contain;
+			padding: 0;
+			margin: 0;
+			background: #000;
+			border: 0;
+			transition: opacity 0.8s ease-in-out;
+			opacity: 1;
+		}
+
+		#grid img.fade-out {
+			opacity: 0;
+		}
+	</style>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		// Configuration
+		var imageBasePath = 'https://esoffron.github.io/compatible-boot-theater/crack-img/';
+		var totalImages = 1147; // crackscr-0001.jpg through crackscr-1147.jpg
+
+		window.bootTheaterConfig = {
+			imageBasePath: imageBasePath,
+			totalImages: totalImages
+		};
+
+		//]]>
+	</script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		(function () {
+			function addLoadListener(fn) {
+				if (window.addEventListener) {
+					window.addEventListener('load', fn, false);
+				} else {
+					var prev = window.onload;
+					window.onload = function () {
+						if (typeof prev === 'function') prev();
+						fn();
+					};
+				}
+			}
+
+			function startImageTheater() {
+				var config = window.bootTheaterConfig || {};
+				var imageBasePath = config.imageBasePath || 'https://esoffron.github.io/compatible-boot-theater/crack-img/';
+				var totalImages = config.totalImages || 1147;
+
+				var gridImages = document.querySelectorAll('#grid img');
+				if (!gridImages || gridImages.length < 1) {
+					console.error('No <img> elements found in grid');
+					return;
+				}
+
+				console.log('Loaded ' + totalImages + ' crack screen images');
+
+				var currentlyDisplayed = [];
+
+				function contains(array, value) {
+					return array.indexOf(value) !== -1;
+				}
+
+				function getRandomImageNumber() {
+					return Math.floor(Math.random() * totalImages) + 1;
+				}
+
+				function getUniqueImageNumber() {
+					var availableImages = [];
+
+					for (var i = 1; i <= totalImages; i++) {
+						if (!contains(currentlyDisplayed, i)) {
+							availableImages.push(i);
+						}
+					}
+
+					if (availableImages.length < 1) {
+						return getRandomImageNumber();
+					}
+
+					return availableImages[Math.floor(Math.random() * availableImages.length)];
+				}
+
+				function formatImageNumber(num) {
+					// Format number as 4-digit string (e.g., 1 -> "0001")
+					var str = num.toString();
+					while (str.length < 4) {
+						str = '0' + str;
+					}
+					return str;
+				}
+
+				function loadImageInCell(img, index, isInitialLoad) {
+					var imageNum = getUniqueImageNumber();
+					currentlyDisplayed[index] = imageNum;
+
+					var imagePath = imageBasePath + 'crackscr-' + formatImageNumber(imageNum) + '.jpg';
+
+					if (isInitialLoad) {
+						// No transition on initial load
+						img.src = imagePath;
+						console.log('Grid ' + index + ' loading: ' + imagePath);
+					} else {
+						// Fade out, change image, then fade in
+						img.classList.add('fade-out');
+
+						setTimeout(function() {
+							img.src = imagePath;
+							console.log('Grid ' + index + ' loading: ' + imagePath);
+
+							// Force reflow to ensure the transition works
+							img.offsetHeight;
+
+							img.classList.remove('fade-out');
+						}, 800); // Wait for fade-out transition
+					}
+				}
+
+				function scheduleReload(img, index) {
+					var randomDelay = 5000 + Math.floor(Math.random() * 10000); // 5-15 seconds
+					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
+
+					setTimeout(function() {
+						console.log('Grid ' + index + ' reloading now');
+						loadImageInCell(img, index);
+						scheduleReload(img, index);
+					}, randomDelay);
+				}
+
+				// Initialize all images
+				for (var i = 0; i < gridImages.length; i++) {
+					loadImageInCell(gridImages[i], i, true); // true = initial load, no fade
+					scheduleReload(gridImages[i], i);
+				}
+			}
+
+			addLoadListener(startImageTheater);
+		})();
+
+		//]]>
+	</script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="grid">
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+		</div>
+	</div>
+</body>
+</html>
