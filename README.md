@@ -4,15 +4,15 @@ This *was* a small patch to Charles Mangin's awesome web page that displays 4AM'
 
 ## New for Januray 2026:
 - MORE CRAZY HTML SCREENSAVERS!
-  - The regular embedded videos PLUS a browser emulator running the attract mode of 4AM's Total Replay
+  - The regular embedded videos PLUS [Chris Torrence's Apple 2TS](https://apple2ts.com) browser emulator running the attract mode of [4AM's Total Replay](https://github.com/a2-4am/4cade)
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_4cade.html
     ```
-  - Six embedded emulators running random selections from 4AM's clean cracks
+  - Six embedded Apple 2TS emulators running random selections from [4AM's clean cracks](https://archive.org/details/apple_ii_library_4am)
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_random_disks.html
     ```
-  - Screenshots of Apple II crack screens from Jason Scott's curated collection
+  - Screenshots of Apple II crack screens from [Jason Scott's curated collection](https://archive.org/details/Apple_II_Crack_Screen_Compilation_2019_12/page/n37/mode/2up)
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_crack_images.html
     ```
@@ -47,8 +47,10 @@ https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_mac_s
 ```
 Make sure you enter URLs exactly, with no leading or trailing spaces.  The Screen Saver isn't tolerant of whitespace!
 ### Credits
-Original at http://textfiles.com/appleboot/
-Charles Mangin's RetroConnector site (http://retroconnector.com)
+Original concept at http://textfiles.com/appleboot/
+
+Charles Mangin's [RetroConnector site](http://retroconnector.com)
+
 Follow Charles Mangin at @Option8@oldbytes.space
 
 Follow 4AM at @a2_4am@mastodon.social
