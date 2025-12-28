@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- APPLE BOOT THEATER - RANDOM DISK EDITION, by Charles Mangin     -->
+<!-- Modified to use Apple2TS emulator with random disk images       -->
+<!-- from the 4am collection                                         -->
+
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Apple Boot Theater - Random Disks</title>
+	<link rel="stylesheet" href="boot_theater.css">
+
+	<script src="a2_disk_urls.js"></script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		// Configuration
+		var diskUrls = window.A2_DISK_URLS || [];
+		var emulatorBaseUrl = 'https://esoffron.github.io/compatible-boot-theater/apple2ts/index.html?theme=minimal&silent=true#';
+		var corsProxy = 'https://corsproxy.io/?'; // CORS proxy to allow fetching from archive.org
+
+		window.bootTheaterConfig = {
+			diskUrls: diskUrls,
+			emulatorBaseUrl: emulatorBaseUrl,
+			corsProxy: corsProxy
+		};
+
+		//]]>
+	</script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		(function () {
+			function addLoadListener(fn) {
+				if (window.addEventListener) {
+					window.addEventListener('load', fn, false);
+				} else {
+					var prev = window.onload;
+					window.onload = function () {
+						if (typeof prev === 'function') prev();
+						fn();
+					};
+				}
+			}
+
+			function shuffleArray(array) {
+				var currentIndex = array.length;
+				var temporaryValue;
+				var randomIndex;
+				while (currentIndex !== 0) {
+					randomIndex = Math.floor(Math.random() * currentIndex);
+					currentIndex -= 1;
+					temporaryValue = array[currentIndex];
+					array[currentIndex] = array[randomIndex];
+					array[randomIndex] = temporaryValue;
+				}
+				return array;
+			}
+
+			function startDiskTheater() {
+				var config = window.bootTheaterConfig || {};
+				var diskUrls = config.diskUrls || [];
+				var emulatorBaseUrl = config.emulatorBaseUrl || '';
+				var corsProxy = config.corsProxy || '';
+
+				var gridIframes = document.querySelectorAll('#grid iframe');
+				if (!gridIframes || gridIframes.length < 1) {
+					console.error('No <iframe> elements found in grid');
+					return;
+				}
+
+				if (!diskUrls || !diskUrls.length) {
+					console.error('No disk URLs provided');
+					return;
+				}
+
+				// Shuffle the disk URLs
+				diskUrls = shuffleArray(diskUrls.slice(0));
+
+				console.log('Loaded ' + diskUrls.length + ' disk URLs');
+
+				var currentlyDisplayed = [];
+
+				function contains(array, value) {
+					return array.indexOf(value) !== -1;
+				}
+
+				function getUniqueDiskUrl() {
+					var availableDisks = [];
+
+					for (var i = 0; i < diskUrls.length; i++) {
+						var url = diskUrls[i];
+						if (!contains(currentlyDisplayed, url)) {
+							availableDisks.push(url);
+						}
+					}
+
+					if (availableDisks.length < 1) {
+						availableDisks = diskUrls;
+					}
+
+					return availableDisks[Math.floor(Math.random() * availableDisks.length)];
+				}
+
+				function loadDiskInIframe(iframe, index) {
+					var diskUrl = getUniqueDiskUrl();
+					currentlyDisplayed[index] = diskUrl;
+
+					// Wrap the disk URL with CORS proxy to avoid CORS issues
+					var proxiedDiskUrl = corsProxy + encodeURIComponent(diskUrl);
+					var fullUrl = emulatorBaseUrl + proxiedDiskUrl;
+
+					// Force iframe to reload by clearing it first, then setting new URL
+					iframe.src = 'about:blank';
+					setTimeout(function() {
+						iframe.src = fullUrl;
+						console.log('Grid ' + index + ' loading: ' + diskUrl);
+					}, 100);
+				}
+
+				function scheduleReload(iframe, index) {
+					var randomDelay = 25000 + Math.floor(Math.random() * 10000); // 25-35 seconds
+					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
+
+					setTimeout(function() {
+						console.log('Grid ' + index + ' reloading now');
+						loadDiskInIframe(iframe, index);
+						scheduleReload(iframe, index);
+					}, randomDelay);
+				}
+
+				// Initialize all iframes
+				for (var i = 0; i < gridIframes.length; i++) {
+					loadDiskInIframe(gridIframes[i], i);
+					scheduleReload(gridIframes[i], i);
+				}
+			}
+
+			addLoadListener(startDiskTheater);
+		})();
+
+		//]]>
+	</script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="grid">
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+			<iframe
+				id="GridFrame"
+				allow="autoplay"
+				loading="lazy"
+				frameborder="0"
+			></iframe>
+		</div>
+	</div>
+</body>
+</html>
