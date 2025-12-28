@@ -12,7 +12,7 @@ This *was* a small patch to Charles Mangin's awesome web page that displays 4AM'
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_random_disks.html
     ```
-  - Screenshots of Apple II crack screens from [Jason Scott's curated collection](https://archive.org/details/Apple_II_Crack_Screen_Compilation_2019_12/page/n37/mode/2up)
+  - Rotating screenshots of Apple II crack screens from [Jason Scott's curated collection](https://archive.org/details/Apple_II_Crack_Screen_Compilation_2019_12/page/n37/mode/2up)
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_crack_images.html
     ```
