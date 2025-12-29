@@ -22,7 +22,7 @@ This *was* a small patch to Charles Mangin's awesome web page that displays 4AM'
 - While I was at it, refactored code to bring the common URLs and Javascript into included files.
 
 ## New in July 2025:
-### NEW for INIT HELLO 2025: It actually works again!
+### For INIT HELLO 2025: It actually works again!
 **INIT HELLO is an exciting new Apple II conference this year.  See the info at https://init-hello.org.**
 
 - The API at Internet Archive had changed in some way which broke URL enumerating...
