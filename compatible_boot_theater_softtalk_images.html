@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- APPLE BOOT THEATER - SOFTTALK COVER IMAGES, by Charles Mangin   -->
+<!-- Modified to display random Softtalk magazine cover images       -->
+
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Apple Boot Theater - Softtalk Cover Images</title>
+	<link rel="stylesheet" href="boot_theater.css">
+
+	<style>
+		#grid img {
+			width: 33.33%;
+			height: 50%;
+			object-fit: contain;
+			padding: 0;
+			margin: 0;
+			background: #000;
+			border: 0;
+			transition: opacity 0.8s ease-in-out;
+			opacity: 1;
+		}
+
+		#grid img.fade-out {
+			opacity: 0;
+		}
+	</style>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		// Configuration
+		var imageBasePath = 'softalkcoverimages/';
+		var imageFiles = [
+			'1983.12 stocking stuffers.png',
+			'softalkv1n01sep1980.png',
+			'softalkv1n02oct1980.png',
+			'softalkv1n03nov1980.png',
+			'softalkv1n04dec1980.png',
+			'softalkv1n05jan1981.png',
+			'softalkv1n06feb1981.png',
+			'softalkv1n07mar1981.png',
+			'softalkv1n08apr1981.png',
+			'softalkv1n09may1981.png',
+			'softalkv1n10jun1981.png',
+			'softalkv1n11jul1981.png',
+			'softalkv1n12aug1981.png',
+			'softalkv2n01sep1981.png',
+			'softalkv2n02oct1981.png',
+			'softalkv2n03nov1981.png',
+			'softalkv2n04dec1981.png',
+			'softalkv2n05jan1982.png',
+			'softalkv2n06feb1982.png',
+			'softalkv2n07mar1982.png',
+			'softalkv2n08apr1982.png',
+			'softalkv2n09may1982.png',
+			'softalkv2n10jun1982.png',
+			'softalkv2n11jul1982.png',
+			'softalkv2n12aug1982.png',
+			'softalkv3n01sep1982.png',
+			'softalkv3n02oct1982.png',
+			'softalkv3n03nov1982.png',
+			'softalkv3n04dec1982.png',
+			'softalkv3n05jan1983.png',
+			'softalkv3n06feb1983.png',
+			'softalkv3n07mar1983.png',
+			'softalkv3n08apr1983.png',
+			'softalkv3n09may1983.png',
+			'softalkv3n10jun1983.png',
+			'softalkv3n11jul1983.png',
+			'softalkv3n12aug1983.png',
+			'softalkv4n01sep1983.png',
+			'softalkv4n02oct1983.png',
+			'softalkv4n03nov1983.png',
+			'softalkv4n04dec1983.png',
+			'softalkv4n05jan1984.png',
+			'softalkv4n06feb1984.png',
+			'softalkv4n07mar1984.png',
+			'softalkv4n08apr1984.png',
+			'softalkv4n09may1984.png',
+			'softalkv4n10jun1984.png',
+			'softalkv4n11jul1984.png',
+			'softalkv4n12aug1984.png'
+		];
+
+		window.bootTheaterConfig = {
+			imageBasePath: imageBasePath,
+			imageFiles: imageFiles
+		};
+
+		//]]>
+	</script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		(function () {
+			function addLoadListener(fn) {
+				if (window.addEventListener) {
+					window.addEventListener('load', fn, false);
+				} else {
+					var prev = window.onload;
+					window.onload = function () {
+						if (typeof prev === 'function') prev();
+						fn();
+					};
+				}
+			}
+
+			function startImageTheater() {
+				var config = window.bootTheaterConfig || {};
+				var imageBasePath = config.imageBasePath || 'softalkcoverimages/';
+				var imageFiles = config.imageFiles || [];
+
+				var gridImages = document.querySelectorAll('#grid img');
+				if (!gridImages || gridImages.length < 1) {
+					console.error('No <img> elements found in grid');
+					return;
+				}
+
+				if (imageFiles.length < 1) {
+					console.error('No image files configured');
+					return;
+				}
+
+				console.log('Loaded ' + imageFiles.length + ' Softtalk cover images');
+
+				var currentlyDisplayed = [];
+
+				function contains(array, value) {
+					return array.indexOf(value) !== -1;
+				}
+
+				function getRandomImageIndex() {
+					return Math.floor(Math.random() * imageFiles.length);
+				}
+
+				function getUniqueImageIndex() {
+					var availableIndices = [];
+
+					for (var i = 0; i < imageFiles.length; i++) {
+						if (!contains(currentlyDisplayed, i)) {
+							availableIndices.push(i);
+						}
+					}
+
+					if (availableIndices.length < 1) {
+						return getRandomImageIndex();
+					}
+
+					return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+				}
+
+				function loadImageInCell(img, index, isInitialLoad) {
+					var imageIndex = getUniqueImageIndex();
+					currentlyDisplayed[index] = imageIndex;
+
+					var fileName = imageFiles[imageIndex];
+					var imagePath = imageBasePath + encodeURIComponent(fileName);
+
+					if (isInitialLoad) {
+						// No transition on initial load
+						img.src = imagePath;
+						console.log('Grid ' + index + ' loading: ' + imagePath);
+					} else {
+						// Fade out, change image, then fade in
+						img.classList.add('fade-out');
+
+						setTimeout(function() {
+							img.src = imagePath;
+							console.log('Grid ' + index + ' loading: ' + imagePath);
+
+							// Force reflow to ensure the transition works
+							img.offsetHeight;
+
+							img.classList.remove('fade-out');
+						}, 800); // Wait for fade-out transition
+					}
+				}
+
+				function scheduleReload(img, index) {
+					var randomDelay = 5000 + Math.floor(Math.random() * 10000); // 5-15 seconds
+					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
+
+					setTimeout(function() {
+						console.log('Grid ' + index + ' reloading now');
+						loadImageInCell(img, index);
+						scheduleReload(img, index);
+					}, randomDelay);
+				}
+
+				// Initialize all images
+				for (var i = 0; i < gridImages.length; i++) {
+					loadImageInCell(gridImages[i], i, true); // true = initial load, no fade
+					scheduleReload(gridImages[i], i);
+				}
+			}
+
+			addLoadListener(startImageTheater);
+		})();
+
+		//]]>
+	</script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="grid">
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+		</div>
+	</div>
+</body>
+</html>

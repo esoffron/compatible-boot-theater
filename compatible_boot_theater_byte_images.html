@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- APPLE BOOT THEATER - BYTE COVER IMAGES, by Charles Mangin       -->
+<!-- Modified to display random Byte magazine cover images           -->
+
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Apple Boot Theater - Byte Cover Images</title>
+	<link rel="stylesheet" href="boot_theater.css">
+
+	<style>
+		#grid img {
+			width: 33.33%;
+			height: 50%;
+			object-fit: contain;
+			padding: 0;
+			margin: 0;
+			background: #000;
+			border: 0;
+			transition: opacity 0.8s ease-in-out;
+			opacity: 1;
+		}
+
+		#grid img.fade-out {
+			opacity: 0;
+		}
+	</style>
+
+	<script type='text/javascript' src="byte_cover_images.js"></script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		// Configuration
+		var imageBasePath = 'ByteCoverImages/';
+		var imageFiles = window.BYTE_COVER_IMAGES || [];
+
+		window.bootTheaterConfig = {
+			imageBasePath: imageBasePath,
+			imageFiles: imageFiles
+		};
+
+		//]]>
+	</script>
+
+	<script type='text/javascript'>
+		//<![CDATA[
+
+		(function () {
+			function addLoadListener(fn) {
+				if (window.addEventListener) {
+					window.addEventListener('load', fn, false);
+				} else {
+					var prev = window.onload;
+					window.onload = function () {
+						if (typeof prev === 'function') prev();
+						fn();
+					};
+				}
+			}
+
+			function startImageTheater() {
+				var config = window.bootTheaterConfig || {};
+				var imageBasePath = config.imageBasePath || 'ByteCoverImages/';
+				var imageFiles = config.imageFiles || [];
+
+				var gridImages = document.querySelectorAll('#grid img');
+				if (!gridImages || gridImages.length < 1) {
+					console.error('No <img> elements found in grid');
+					return;
+				}
+
+				if (imageFiles.length < 1) {
+					console.error('No image files configured');
+					return;
+				}
+
+				console.log('Loaded ' + imageFiles.length + ' Byte cover images');
+
+				var currentlyDisplayed = [];
+
+				function contains(array, value) {
+					return array.indexOf(value) !== -1;
+				}
+
+				function getRandomImageIndex() {
+					return Math.floor(Math.random() * imageFiles.length);
+				}
+
+				function getUniqueImageIndex() {
+					var availableIndices = [];
+
+					for (var i = 0; i < imageFiles.length; i++) {
+						if (!contains(currentlyDisplayed, i)) {
+							availableIndices.push(i);
+						}
+					}
+
+					if (availableIndices.length < 1) {
+						return getRandomImageIndex();
+					}
+
+					return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+				}
+
+				function loadImageInCell(img, index, isInitialLoad) {
+					var imageIndex = getUniqueImageIndex();
+					currentlyDisplayed[index] = imageIndex;
+
+					var fileName = imageFiles[imageIndex];
+					var imagePath = imageBasePath + encodeURIComponent(fileName);
+
+					if (isInitialLoad) {
+						// No transition on initial load
+						img.src = imagePath;
+						console.log('Grid ' + index + ' loading: ' + imagePath);
+					} else {
+						// Fade out, change image, then fade in
+						img.classList.add('fade-out');
+
+						setTimeout(function() {
+							img.src = imagePath;
+							console.log('Grid ' + index + ' loading: ' + imagePath);
+
+							// Force reflow to ensure the transition works
+							img.offsetHeight;
+
+							img.classList.remove('fade-out');
+						}, 800); // Wait for fade-out transition
+					}
+				}
+
+				function scheduleReload(img, index) {
+					var randomDelay = 5000 + Math.floor(Math.random() * 10000); // 5-15 seconds
+					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
+
+					setTimeout(function() {
+						console.log('Grid ' + index + ' reloading now');
+						loadImageInCell(img, index);
+						scheduleReload(img, index);
+					}, randomDelay);
+				}
+
+				// Initialize all images
+				for (var i = 0; i < gridImages.length; i++) {
+					loadImageInCell(gridImages[i], i, true); // true = initial load, no fade
+					scheduleReload(gridImages[i], i);
+				}
+			}
+
+			addLoadListener(startImageTheater);
+		})();
+
+		//]]>
+	</script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="grid">
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+			<img id="GridImage" />
+		</div>
+	</div>
+</body>
+</html>
