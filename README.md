@@ -16,6 +16,14 @@ This *was* a small patch to Charles Mangin's awesome web page that displays 4AM'
     ```
     https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_crack_images.html
     ```
+  - Rotating cover images from Softalk magazine
+    ```
+    https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_softalk_images.html
+    ```
+  - Rotating cover images from Byte magazine
+    ```
+    https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_byte_images.html
+    ```
 
 ## New in December 2025:
 - Stale URLs were clogging things up for the old boot movie player.  Cleaned up the list to get a fresh list of working / not working.
