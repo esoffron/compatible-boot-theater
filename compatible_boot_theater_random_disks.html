@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- APPLE BOOT THEATER - RANDOM DISK EDITION, by Charles Mangin     -->
-<!-- Modified to use Apple2TS emulator with random disk images       -->
-<!-- from the 4am collection                                         -->
+<!-- APPLE BOOT THEATER - RANDOM DISK EDITION. Based on idea by Charles Mangin.   -->
+<!-- Uses the excellent Apple2TS emulator from Chris Torrence                     -->
+<!--                                                                              -->
+<!-- Updated by @soffronoff@mastodon.social to use Apple2TS emulator              -->
+<!-- with random disk images from the 4am collection                              -->
 
 <html>
 <head>
@@ -18,7 +20,7 @@
 
 		// Configuration
 		var diskUrls = window.A2_DISK_URLS || [];
-		var emulatorBaseUrl = 'https://esoffron.github.io/compatible-boot-theater/apple2ts/index.html?theme=minimal&sound=off&silent=true#';
+		var emulatorBaseUrl = 'https://apple2ts.com/?speed=normal&appmode=embed&sound=off#';
 		var corsProxy = 'https://corsproxy.io/?'; // CORS proxy to allow fetching from archive.org
 
 		window.bootTheaterConfig = {
@@ -116,6 +118,7 @@
 					// Force iframe to reload by clearing it first, then setting new URL
 					iframe.src = 'about:blank';
 					setTimeout(function() {
+						console.log('Grid ' + index + ' launch URL: ' + fullUrl);
 						iframe.src = fullUrl;
 						console.log('Grid ' + index + ' loading: ' + diskUrl);
 					}, 100);
