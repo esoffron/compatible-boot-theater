@@ -59,6 +59,10 @@ Original concept at http://textfiles.com/appleboot/
 
 Charles Mangin's [RetroConnector site](http://retroconnector.com)
 
+Chris Torrence's many cool projects (including Apple 2TS) are at https://ct6502.org
+
+The awesome WebViewScreenSaver for the Mac at https://github.com/liquidx/webviewscreensaver
+
 Follow Charles Mangin at @Option8@oldbytes.space
 
 Follow 4AM at @a2_4am@mastodon.social
