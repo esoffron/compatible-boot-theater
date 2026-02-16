@@ -1,3 +1,5 @@
+// Mac boot video URL catalog consumed by boot_theater.js.
+// Exposes window.MAC_VIDEO_URLS.
 (function () {
 	var urls = [
 		"https://archive.org/download/MacVideo_Balance_of_Power/Balance%20of%20Power.mp4",

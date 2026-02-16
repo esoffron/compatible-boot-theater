@@ -1,3 +1,5 @@
+// BYTE magazine cover image filenames used by the rotating image page.
+// Entries map to files under ByteCoverImages/.
 window.BYTE_COVER_IMAGES = [
   "1975_09_BYTE_00-01_The_Worlds_Greatest_Toy.png",
   "1975_10_BYTE_00-02_Build_a_Graphics_Display.png",

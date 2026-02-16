@@ -1,3 +1,5 @@
+// Apple II disk image URL catalog for the random-disks theater page.
+// Exposes window.A2_DISK_URLS.
 (function () {
     var urls = [
         "https://archive.org/download/RhythmWrite4amCrack/00playable.dsk",

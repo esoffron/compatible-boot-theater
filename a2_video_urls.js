@@ -1,3 +1,5 @@
+// Apple II boot video URL catalog consumed by boot_theater.js.
+// Exposes window.A2_VIDEO_URLS.
 (function () {
 	var urls = [
 		"https://archive.org/download/A2Video_A2_GamePack/A2%20GamePack.mp4",

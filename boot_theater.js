@@ -1,3 +1,5 @@
+// Shared runtime for the boot theater HTML variants.
+// Reads window.bootTheaterConfig and continuously cycles grid video elements.
 (function () {
 	function addLoadListener(fn) {
 		if (window.addEventListener) {
@@ -31,14 +33,36 @@
 		return array;
 	}
 
+	function createGridVideos(grid, count, muted) {
+		// Some pages intentionally leave #grid empty and configure slot count in JS.
+		var firstIframe = grid.getElementsByTagName('iframe')[0] || null;
+		for (var i = 0; i < count; i++) {
+			var video = document.createElement('video');
+			video.autoplay = true;
+			if (muted) video.muted = true;
+			if (firstIframe) {
+				grid.insertBefore(video, firstIframe);
+			} else {
+				grid.appendChild(video);
+			}
+		}
+	}
+
 	function startBootTheater() {
 		var config = window.bootTheaterConfig || {};
 		var videoUrls = config.videoUrls || window.videoUrls;
 		var label = config.label || 'video URLs';
 		var muted = !!config.muted;
 		var fixedGridUrls = config.fixedGridUrls || {};
+		var configuredVideoCount = parseInt(config.videoCount, 10);
+		var grid = document.getElementById('grid') || document.body;
+		var gridVideos = grid.getElementsByTagName('video');
 
-		var gridVideos = document.getElementsByTagName('video');
+		if (gridVideos.length < 1 && configuredVideoCount > 0) {
+			createGridVideos(grid, configuredVideoCount, muted);
+			gridVideos = grid.getElementsByTagName('video');
+		}
+
 		if (!gridVideos || gridVideos.length < 1) {
 			console.error('No <video> elements found');
 			return;
@@ -56,30 +80,28 @@
 		console.log('Loaded ' + videoUrls.length + ' ' + label + (muted ? ' (muted)' : ''));
 
 		var currentlyPlaying = ensureArrayLength(gridVideos.length, null);
-		var failedVideos = [];
-
-		function contains(array, value) {
-			return array.indexOf(value) !== -1;
-		}
+		var failedVideos = {};
 
 		function getUniqueVideoUrl() {
 			var availableVideos = [];
 
 			for (var i = 0; i < videoUrls.length; i++) {
 				var url = videoUrls[i];
-				if (contains(failedVideos, url)) continue;
-				if (contains(currentlyPlaying, url)) continue;
+				if (failedVideos[url]) continue;
+				if (currentlyPlaying.indexOf(url) !== -1) continue;
 				availableVideos.push(url);
 			}
 
 			if (availableVideos.length < 1) {
+				// Prefer URLs not already on-screen, even if they previously failed.
 				for (var j = 0; j < videoUrls.length; j++) {
 					var url2 = videoUrls[j];
-					if (!contains(currentlyPlaying, url2)) availableVideos.push(url2);
+					if (currentlyPlaying.indexOf(url2) === -1) availableVideos.push(url2);
 				}
 			}
 
 			if (availableVideos.length < 1) {
+				// Last resort: allow any URL to avoid getting stuck.
 				availableVideos = videoUrls;
 			}
 
@@ -110,21 +132,24 @@
 			ele.load();
 			safePlay(ele);
 
-			ele.onerror = function () {
-				console.error('Failed to load: ' + videoUrl);
-				failedVideos.push(videoUrl);
-				playAtIndex(gridIndex, ele);
-			};
-
-			ele.onended = function () {
-				playAtIndex(gridIndex, ele);
-			};
-
 			console.log('Grid ' + gridIndex + ' playing' + (muted ? ' (muted)' : '') + ': ' + videoUrl);
 		}
 
 		for (var i = 0; i < gridVideos.length; i++) {
-			playAtIndex(i, gridVideos[i]);
+			(function (gridIndex, ele) {
+				ele.onerror = function () {
+					var failedUrl = currentlyPlaying[gridIndex];
+					console.error('Failed to load: ' + failedUrl);
+					if (failedUrl) failedVideos[failedUrl] = true;
+					playAtIndex(gridIndex, ele);
+				};
+
+				ele.onended = function () {
+					playAtIndex(gridIndex, ele);
+				};
+
+				playAtIndex(gridIndex, ele);
+			})(i, gridVideos[i]);
 		}
 	}
 

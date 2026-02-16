@@ -22,14 +22,7 @@
      <meta charset="UTF-8">
 	<title>Mac Boot Theater, by Charles Mangin (Muted)</title>
 	<link rel="stylesheet" href="boot_theater.css">
-			
-<!-- jquery not needed for hardcoded versions
-<script 
-	src="https://code.jquery.com/jquery-3.6.4.min.js" 
-	integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" 
-	crossorigin="anonymous"></script>	
- -->
-		
+
 <script src="mac_video_urls.js"></script>
 		
 <script type='text/javascript'>
@@ -41,6 +34,7 @@ var videoUrls = window.MAC_VIDEO_URLS;
 window.bootTheaterConfig = {
 	videoUrls: videoUrls,
 	muted: true,
+	videoCount: 6,
 	label: 'Mac video URLs'
 };
 
@@ -50,20 +44,8 @@ window.bootTheaterConfig = {
 </head>
 
 <body>
-	<div id="container">		
-<!-- 
-		<div id="progress" style="border:1px solid #fff;height:10px; padding: 1px; margin: 10% auto; width: 0px;">
-			<div id="bar" style="height:8px; float: left; background-color: #fff;"></div>
-		</div>
- -->
-		
+	<div id="container">
 <div id="grid">		
-		<video id="GridVideo" autoplay="true" muted></video>
-		<video id="GridVideo" autoplay="true" muted></video>
-		<video id="GridVideo" autoplay="true" muted></video>
-		<video id="GridVideo" autoplay="true" muted></video>
-		<video id="GridVideo" autoplay="true" muted></video>
-		<video id="GridVideo" autoplay="true" muted></video>
 	</div>	
 	</div>
 </body>
