@@ -74,6 +74,7 @@
 				console.log('Loaded ' + totalImages + ' crack screen images');
 
 				var currentlyDisplayed = [];
+				var pendingImages = [];
 
 				function contains(array, value) {
 					return array.indexOf(value) !== -1;
@@ -87,7 +88,7 @@
 					var availableImages = [];
 
 					for (var i = 1; i <= totalImages; i++) {
-						if (!contains(currentlyDisplayed, i)) {
+						if (!contains(currentlyDisplayed, i) && !contains(pendingImages, i)) {
 							availableImages.push(i);
 						}
 					}
@@ -108,30 +109,42 @@
 					return str;
 				}
 
-				function loadImageInCell(img, index, isInitialLoad) {
+				function loadImageInCell(img, index, isInitialLoad, onDone) {
 					var imageNum = getUniqueImageNumber();
-					currentlyDisplayed[index] = imageNum;
+					pendingImages[index] = imageNum;
 
 					var imagePath = imageBasePath + 'crackscr-' + formatImageNumber(imageNum) + '.jpg';
+					var preloader = new Image();
 
-					if (isInitialLoad) {
-						// No transition on initial load
-						img.src = imagePath;
-						console.log('Grid ' + index + ' loading: ' + imagePath);
-					} else {
-						// Fade out, change image, then fade in
+					preloader.onload = function () {
+						pendingImages[index] = null;
+						currentlyDisplayed[index] = imageNum;
+
+						if (isInitialLoad) {
+							img.src = imagePath;
+							console.log('Grid ' + index + ' loading: ' + imagePath);
+							if (typeof onDone === 'function') onDone();
+							return;
+						}
+
 						img.classList.add('fade-out');
 
 						setTimeout(function() {
 							img.src = imagePath;
 							console.log('Grid ' + index + ' loading: ' + imagePath);
-
-							// Force reflow to ensure the transition works
 							img.offsetHeight;
-
 							img.classList.remove('fade-out');
-						}, 800); // Wait for fade-out transition
-					}
+							if (typeof onDone === 'function') onDone();
+						}, 800);
+					};
+
+					preloader.onerror = function () {
+						pendingImages[index] = null;
+						console.warn('Failed to preload image for grid ' + index + ': ' + imagePath);
+						if (typeof onDone === 'function') onDone();
+					};
+
+					preloader.src = imagePath;
 				}
 
 				function scheduleReload(img, index) {
@@ -140,15 +153,19 @@
 
 					setTimeout(function() {
 						console.log('Grid ' + index + ' reloading now');
-						loadImageInCell(img, index);
-						scheduleReload(img, index);
+						loadImageInCell(img, index, false, function () {
+							scheduleReload(img, index);
+						});
 					}, randomDelay);
 				}
 
 				// Initialize all images
 				for (var i = 0; i < gridImages.length; i++) {
-					loadImageInCell(gridImages[i], i, true); // true = initial load, no fade
-					scheduleReload(gridImages[i], i);
+					(function (img, index) {
+						loadImageInCell(img, index, true, function () {
+							scheduleReload(img, index);
+						});
+					})(gridImages[i], i);
 				}
 			}
 

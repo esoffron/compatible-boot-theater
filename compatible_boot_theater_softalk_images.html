@@ -128,6 +128,7 @@
 				console.log('Loaded ' + imageFiles.length + ' Softtalk cover images');
 
 				var currentlyDisplayed = [];
+				var pendingIndices = [];
 
 				function contains(array, value) {
 					return array.indexOf(value) !== -1;
@@ -141,7 +142,7 @@
 					var availableIndices = [];
 
 					for (var i = 0; i < imageFiles.length; i++) {
-						if (!contains(currentlyDisplayed, i)) {
+						if (!contains(currentlyDisplayed, i) && !contains(pendingIndices, i)) {
 							availableIndices.push(i);
 						}
 					}
@@ -153,31 +154,43 @@
 					return availableIndices[Math.floor(Math.random() * availableIndices.length)];
 				}
 
-				function loadImageInCell(img, index, isInitialLoad) {
+				function loadImageInCell(img, index, isInitialLoad, onDone) {
 					var imageIndex = getUniqueImageIndex();
-					currentlyDisplayed[index] = imageIndex;
+					pendingIndices[index] = imageIndex;
 
 					var fileName = imageFiles[imageIndex];
 					var imagePath = imageBasePath + encodeURIComponent(fileName);
+					var preloader = new Image();
 
-					if (isInitialLoad) {
-						// No transition on initial load
-						img.src = imagePath;
-						console.log('Grid ' + index + ' loading: ' + imagePath);
-					} else {
-						// Fade out, change image, then fade in
+					preloader.onload = function () {
+						pendingIndices[index] = null;
+						currentlyDisplayed[index] = imageIndex;
+
+						if (isInitialLoad) {
+							img.src = imagePath;
+							console.log('Grid ' + index + ' loading: ' + imagePath);
+							if (typeof onDone === 'function') onDone();
+							return;
+						}
+
 						img.classList.add('fade-out');
 
 						setTimeout(function() {
 							img.src = imagePath;
 							console.log('Grid ' + index + ' loading: ' + imagePath);
-
-							// Force reflow to ensure the transition works
 							img.offsetHeight;
-
 							img.classList.remove('fade-out');
-						}, 800); // Wait for fade-out transition
-					}
+							if (typeof onDone === 'function') onDone();
+						}, 800);
+					};
+
+					preloader.onerror = function () {
+						pendingIndices[index] = null;
+						console.warn('Failed to preload image for grid ' + index + ': ' + imagePath);
+						if (typeof onDone === 'function') onDone();
+					};
+
+					preloader.src = imagePath;
 				}
 
 				function scheduleReload(img, index) {
@@ -186,15 +199,19 @@
 
 					setTimeout(function() {
 						console.log('Grid ' + index + ' reloading now');
-						loadImageInCell(img, index);
-						scheduleReload(img, index);
+						loadImageInCell(img, index, false, function () {
+							scheduleReload(img, index);
+						});
 					}, randomDelay);
 				}
 
 				// Initialize all images
 				for (var i = 0; i < gridImages.length; i++) {
-					loadImageInCell(gridImages[i], i, true); // true = initial load, no fade
-					scheduleReload(gridImages[i], i);
+					(function (img, index) {
+						loadImageInCell(img, index, true, function () {
+							scheduleReload(img, index);
+						});
+					})(gridImages[i], i);
 				}
 			}
 
