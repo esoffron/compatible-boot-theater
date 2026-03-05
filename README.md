@@ -5,7 +5,7 @@ This *was* a small patch to Charles Mangin's awesome web page that displays 4AM'
 - #Marchintosh saver with rotating classic Mac magazine covers!  Cover images extracted from the great PDF magazine at [https://vintageapple.org](https://vintageapple.org) 
    ```
    https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_mac_mag_images.html
-   		```
+   ```
 
 ## New for January 2026:
 - MORE CRAZY HTML SCREENSAVERS!
