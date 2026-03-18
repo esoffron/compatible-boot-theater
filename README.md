@@ -2,7 +2,7 @@
 This *was* a small patch to Charles Mangin's awesome web page that displays 4AM's Apple II crack movies.  When I checked back recently my code (and his original as well) no longer worked.  So now it's a medium patch to his awesome original idea, plus an increasing number of variations on the theme.
 
 ## New for March 2026:
-- #Marchintosh saver with rotating classic Mac magazine covers!  Cover images extracted from the great PDF magazine at [https://vintageapple.org](https://vintageapple.org) 
+- #Marchintosh saver with rotating classic Mac magazine covers!  Cover images extracted from the great PDF magazine archive at [https://vintageapple.org](https://vintageapple.org) 
    ```
    https://esoffron.github.io/compatible-boot-theater/compatible_boot_theater_mac_mag_images.html
    ```
