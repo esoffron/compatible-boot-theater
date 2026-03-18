@@ -32,148 +32,26 @@
 	<script type='text/javascript'>
 		//<![CDATA[
 
-		// Configuration
-		var imageBasePath = 'https://esoffron.github.io/compatible-boot-theater/crack-img/';
-		var totalImages = 1147; // crackscr-0001.jpg through crackscr-1147.jpg
+		function formatCrackImageNumber(num) {
+			var str = num.toString();
+			while (str.length < 4) {
+				str = '0' + str;
+			}
+			return str;
+		}
 
 		window.bootTheaterConfig = {
-			imageBasePath: imageBasePath,
-			totalImages: totalImages
+			imageBasePath: 'https://esoffron.github.io/compatible-boot-theater/crack-img/',
+			totalImages: 1147,
+			logLabel: 'crack screen images',
+			getImagePath: function (imageNum) {
+				return this.imageBasePath + 'crackscr-' + formatCrackImageNumber(imageNum) + '.jpg';
+			}
 		};
 
 		//]]>
 	</script>
-
-	<script type='text/javascript'>
-		//<![CDATA[
-
-		(function () {
-			function addLoadListener(fn) {
-				if (window.addEventListener) {
-					window.addEventListener('load', fn, false);
-				} else {
-					var prev = window.onload;
-					window.onload = function () {
-						if (typeof prev === 'function') prev();
-						fn();
-					};
-				}
-			}
-
-			function startImageTheater() {
-				var config = window.bootTheaterConfig || {};
-				var imageBasePath = config.imageBasePath || 'https://esoffron.github.io/compatible-boot-theater/crack-img/';
-				var totalImages = config.totalImages || 1147;
-
-				var gridImages = document.querySelectorAll('#grid img');
-				if (!gridImages || gridImages.length < 1) {
-					console.error('No <img> elements found in grid');
-					return;
-				}
-
-				console.log('Loaded ' + totalImages + ' crack screen images');
-
-				var currentlyDisplayed = [];
-				var pendingImages = [];
-
-				function contains(array, value) {
-					return array.indexOf(value) !== -1;
-				}
-
-				function getRandomImageNumber() {
-					return Math.floor(Math.random() * totalImages) + 1;
-				}
-
-				function getUniqueImageNumber() {
-					var availableImages = [];
-
-					for (var i = 1; i <= totalImages; i++) {
-						if (!contains(currentlyDisplayed, i) && !contains(pendingImages, i)) {
-							availableImages.push(i);
-						}
-					}
-
-					if (availableImages.length < 1) {
-						return getRandomImageNumber();
-					}
-
-					return availableImages[Math.floor(Math.random() * availableImages.length)];
-				}
-
-				function formatImageNumber(num) {
-					// Format number as 4-digit string (e.g., 1 -> "0001")
-					var str = num.toString();
-					while (str.length < 4) {
-						str = '0' + str;
-					}
-					return str;
-				}
-
-				function loadImageInCell(img, index, isInitialLoad, onDone) {
-					var imageNum = getUniqueImageNumber();
-					pendingImages[index] = imageNum;
-
-					var imagePath = imageBasePath + 'crackscr-' + formatImageNumber(imageNum) + '.jpg';
-					var preloader = new Image();
-
-					preloader.onload = function () {
-						pendingImages[index] = null;
-						currentlyDisplayed[index] = imageNum;
-
-						if (isInitialLoad) {
-							img.src = imagePath;
-							console.log('Grid ' + index + ' loading: ' + imagePath);
-							if (typeof onDone === 'function') onDone();
-							return;
-						}
-
-						img.classList.add('fade-out');
-
-						setTimeout(function() {
-							img.src = imagePath;
-							console.log('Grid ' + index + ' loading: ' + imagePath);
-							img.offsetHeight;
-							img.classList.remove('fade-out');
-							if (typeof onDone === 'function') onDone();
-						}, 800);
-					};
-
-					preloader.onerror = function () {
-						pendingImages[index] = null;
-						console.warn('Failed to preload image for grid ' + index + ': ' + imagePath);
-						if (typeof onDone === 'function') onDone();
-					};
-
-					preloader.src = imagePath;
-				}
-
-				function scheduleReload(img, index) {
-					var randomDelay = 5000 + Math.floor(Math.random() * 10000); // 5-15 seconds
-					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
-
-					setTimeout(function() {
-						console.log('Grid ' + index + ' reloading now');
-						loadImageInCell(img, index, false, function () {
-							scheduleReload(img, index);
-						});
-					}, randomDelay);
-				}
-
-				// Initialize all images
-				for (var i = 0; i < gridImages.length; i++) {
-					(function (img, index) {
-						loadImageInCell(img, index, true, function () {
-							scheduleReload(img, index);
-						});
-					})(gridImages[i], i);
-				}
-			}
-
-			addLoadListener(startImageTheater);
-		})();
-
-		//]]>
-	</script>
+	<script type='text/javascript' src="boot_theater_image_rotator.js"></script>
 </head>
 
 <body>

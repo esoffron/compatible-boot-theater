@@ -33,145 +33,15 @@
 	<script type='text/javascript'>
 		//<![CDATA[
 
-		// Configuration
-		var imageBasePath = 'ByteCoverImages/';
-		var imageFiles = window.BYTE_COVER_IMAGES || [];
-
 		window.bootTheaterConfig = {
-			imageBasePath: imageBasePath,
-			imageFiles: imageFiles
+			imageBasePath: 'ByteCoverImages/',
+			imageFiles: window.BYTE_COVER_IMAGES || [],
+			logLabel: 'Byte cover images'
 		};
 
 		//]]>
 	</script>
-
-	<script type='text/javascript'>
-		//<![CDATA[
-
-		(function () {
-			function addLoadListener(fn) {
-				if (window.addEventListener) {
-					window.addEventListener('load', fn, false);
-				} else {
-					var prev = window.onload;
-					window.onload = function () {
-						if (typeof prev === 'function') prev();
-						fn();
-					};
-				}
-			}
-
-			function startImageTheater() {
-				var config = window.bootTheaterConfig || {};
-				var imageBasePath = config.imageBasePath || 'ByteCoverImages/';
-				var imageFiles = config.imageFiles || [];
-
-				var gridImages = document.querySelectorAll('#grid img');
-				if (!gridImages || gridImages.length < 1) {
-					console.error('No <img> elements found in grid');
-					return;
-				}
-
-				if (imageFiles.length < 1) {
-					console.error('No image files configured');
-					return;
-				}
-
-				console.log('Loaded ' + imageFiles.length + ' Byte cover images');
-
-				var currentlyDisplayed = [];
-				var pendingIndices = [];
-
-				function contains(array, value) {
-					return array.indexOf(value) !== -1;
-				}
-
-				function getRandomImageIndex() {
-					return Math.floor(Math.random() * imageFiles.length);
-				}
-
-				function getUniqueImageIndex() {
-					var availableIndices = [];
-
-					for (var i = 0; i < imageFiles.length; i++) {
-						if (!contains(currentlyDisplayed, i) && !contains(pendingIndices, i)) {
-							availableIndices.push(i);
-						}
-					}
-
-					if (availableIndices.length < 1) {
-						return getRandomImageIndex();
-					}
-
-					return availableIndices[Math.floor(Math.random() * availableIndices.length)];
-				}
-
-				function loadImageInCell(img, index, isInitialLoad, onDone) {
-					var imageIndex = getUniqueImageIndex();
-					pendingIndices[index] = imageIndex;
-
-					var fileName = imageFiles[imageIndex];
-					var imagePath = imageBasePath + encodeURIComponent(fileName);
-					var preloader = new Image();
-
-					preloader.onload = function () {
-						pendingIndices[index] = null;
-						currentlyDisplayed[index] = imageIndex;
-
-						if (isInitialLoad) {
-							img.src = imagePath;
-							console.log('Grid ' + index + ' loading: ' + imagePath);
-							if (typeof onDone === 'function') onDone();
-							return;
-						}
-
-						img.classList.add('fade-out');
-
-						setTimeout(function() {
-							img.src = imagePath;
-							console.log('Grid ' + index + ' loading: ' + imagePath);
-							img.offsetHeight;
-							img.classList.remove('fade-out');
-							if (typeof onDone === 'function') onDone();
-						}, 800);
-					};
-
-					preloader.onerror = function () {
-						pendingIndices[index] = null;
-						console.warn('Failed to preload image for grid ' + index + ': ' + imagePath);
-						if (typeof onDone === 'function') onDone();
-					};
-
-					preloader.src = imagePath;
-				}
-
-				function scheduleReload(img, index) {
-					var randomDelay = 5000 + Math.floor(Math.random() * 10000); // 5-15 seconds
-					console.log('Grid ' + index + ' will reload in ' + (randomDelay / 1000) + ' seconds');
-
-					setTimeout(function() {
-						console.log('Grid ' + index + ' reloading now');
-						loadImageInCell(img, index, false, function () {
-							scheduleReload(img, index);
-						});
-					}, randomDelay);
-				}
-
-				// Initialize all images
-				for (var i = 0; i < gridImages.length; i++) {
-					(function (img, index) {
-						loadImageInCell(img, index, true, function () {
-							scheduleReload(img, index);
-						});
-					})(gridImages[i], i);
-				}
-			}
-
-			addLoadListener(startImageTheater);
-		})();
-
-		//]]>
-	</script>
+	<script type='text/javascript' src="boot_theater_image_rotator.js"></script>
 </head>
 
 <body>
