@@ -72,6 +72,8 @@ Follow Charles Mangin at @Option8@oldbytes.space
 
 Follow 4AM at @a2_4am@mastodon.social
 
+I wish I'd made this but I didn't, go get it too: [Fits on a Floppy](https://fitsonafloppy.com)
+
 
 
 https://user-images.githubusercontent.com/4109731/219543457-17785b4e-742e-403f-8fef-9109366de9c0.mp4
